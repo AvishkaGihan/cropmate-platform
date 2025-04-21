@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  name        String
+  role        Role     @default(CUSTOMER)
+  address     String?
+  bankDetails BankDetails?
+  crops       Crop[]
+  orders      Order[]
+  deliveries  Delivery[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum Role {
+  CUSTOMER
+  FARMER
+  DRIVER
+}
+
+model BankDetails {
+  id          String  @id @default(uuid())
+  accountName String
+  accountNumber String
+  bankName    String
+  branch      String?
+  userId      String  @unique
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model Crop {
+  id               String   @id @default(uuid())
+  name             String
+  description      String?
+  pricePerUnit     Float
+  availableQuantity Float
+  unit             String
+  harvestDate      DateTime
+  location         String
+  imageUrl         String?
+  farmerId         String
+  farmer           User     @relation(fields: [farmerId], references: [id])
+  orders           Order[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Order {
+  id             String   @id @default(uuid())
+  quantity       Float
+  totalPrice     Float
+  status         OrderStatus @default(PENDING_PAYMENT)
+  deliveryAddress String
+  paymentProof   String?
+  buyerId        String
+  buyer          User     @relation(fields: [buyerId], references: [id])
+  cropId         String
+  crop           Crop     @relation(fields: [cropId], references: [id])
+  delivery       Delivery?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_RECEIVED
+  READY_FOR_DELIVERY
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+model Delivery {
+  id          String   @id @default(uuid())
+  status      DeliveryStatus @default(PENDING)
+  pickupDate  DateTime?
+  deliveryDate DateTime?
+  driverId    String?
+  driver      User?    @relation(fields: [driverId], references: [id])
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum DeliveryStatus {
+  PENDING
+  ACCEPTED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLEDy
+}
