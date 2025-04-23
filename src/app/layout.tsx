@@ -31,7 +31,7 @@ export default function RootLayout({
         className={`${inter.className} antialiased`}
         suppressHydrationWarning
       >
-        <main>{children}</main>
+        {children}
         <Toaster />
       </body>
     </html>
