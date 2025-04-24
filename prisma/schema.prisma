@@ -45,10 +45,18 @@ model BankDetails {
   user        User    @relation(fields: [userId], references: [id])
 }
 
+enum CropCategory {
+  vegetables
+  fruits
+  grains
+  legumes
+}
+
 model Crop {
   id               String   @id @default(uuid())
   name             String
   description      String?
+  category    CropCategory
   pricePerUnit     Float
   availableQuantity Float
   unit             String

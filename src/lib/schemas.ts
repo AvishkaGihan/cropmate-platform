@@ -74,6 +74,7 @@ const imageSchema = z
 export const cropSchema = z.object({
   name: z.string().min(2),
   description: z.string().optional(),
+  category: z.enum(["vegetables", "fruits", "grains", "legumes"]),
   pricePerUnit: z.number().min(0),
   availableQuantity: z.number().min(0),
   unit: z.string().min(1),

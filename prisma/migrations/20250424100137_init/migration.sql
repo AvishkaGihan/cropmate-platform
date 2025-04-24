@@ -2,6 +2,9 @@
 CREATE TYPE "Role" AS ENUM ('CUSTOMER', 'FARMER', 'DRIVER');
 
 -- CreateEnum
+CREATE TYPE "CropCategory" AS ENUM ('vegetables', 'fruits', 'grains', 'legumes');
+
+-- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('PENDING_PAYMENT', 'PAYMENT_RECEIVED', 'READY_FOR_DELIVERY', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED');
 
 -- CreateEnum
@@ -38,6 +41,7 @@ CREATE TABLE "Crop" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
+    "category" "CropCategory" NOT NULL,
     "pricePerUnit" DOUBLE PRECISION NOT NULL,
     "availableQuantity" DOUBLE PRECISION NOT NULL,
     "unit" TEXT NOT NULL,

@@ -17,7 +17,7 @@ const Navbar = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const query = formData.get("search") as string;
-    router.push(`/crops/search?q=${encodeURIComponent(query)}`);
+    router.push(`/crops?q=${encodeURIComponent(query)}`);
   };
 
   return (
