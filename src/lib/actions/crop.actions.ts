@@ -3,6 +3,7 @@
 import db from "@/lib/db";
 import { Prisma } from "@/app/generated/prisma";
 import { CropSearchParams } from "@/types";
+import { notFound } from "next/navigation";
 
 export async function getCrops(searchParams: CropSearchParams) {
   try {
@@ -53,5 +54,38 @@ export async function getCrops(searchParams: CropSearchParams) {
   } catch (error) {
     console.error("Failed to fetch crops:", error);
     throw new Error("Failed to fetch crops");
+  }
+}
+
+export async function getCropById(id: string) {
+  try {
+    const crop = await db.crop.findUnique({
+      where: { id },
+      include: {
+        farmer: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            bankDetails: {
+              select: {
+                accountName: true,
+                bankName: true,
+                accountNumber: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!crop) {
+      notFound();
+    }
+
+    return crop;
+  } catch (error) {
+    console.error(`Failed to fetch crop with ID ${id}:`, error);
+    throw new Error("Failed to fetch crop details");
   }
 }

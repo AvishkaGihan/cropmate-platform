@@ -21,8 +21,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, password, role } = validatedFields.data;
 
         try {
-          const user = await loginUser({ email, password, role });
-          return user;
+          const userData = await loginUser({ email, password, role });
+          if (!userData) return null;
+
+          return {
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role,
+            address: userData.address ?? undefined,
+          };
         } catch (error) {
           return null;
         }
@@ -32,15 +40,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
         token.id = user.id;
+        token.role = user.role;
+        token.address = user.address;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role;
         session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.address = token.address;
       }
       return session;
     },

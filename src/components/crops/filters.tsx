@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -15,16 +16,26 @@ import {
 export default function Filters() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const minInputRef = useRef<HTMLInputElement>(null);
+  const maxInputRef = useRef<HTMLInputElement>(null);
+
+  const [priceRange, setPriceRange] = useState<[number, number]>([
+    Number(searchParams.get("minPrice")) || 0,
+    Number(searchParams.get("maxPrice")) || 1000,
+  ]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const params = new URLSearchParams(searchParams.toString());
 
-    // Update params with form data
     formData.forEach((value, key) => {
       if (value) {
-        params.set(key, value.toString());
+        if (key === "category" && value === "all") {
+          params.delete(key);
+        } else {
+          params.set(key, value.toString());
+        }
       } else {
         params.delete(key);
       }
@@ -35,6 +46,18 @@ export default function Filters() {
 
   const clearFilters = () => {
     router.push("/crops");
+  };
+
+  const handleSliderChange = (value: number[]) => {
+    setPriceRange([value[0], value[1]]);
+
+    if (minInputRef.current) {
+      minInputRef.current.value = value[0].toString();
+    }
+
+    if (maxInputRef.current) {
+      maxInputRef.current.value = value[1].toString();
+    }
   };
 
   return (
@@ -49,6 +72,7 @@ export default function Filters() {
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="all">All categories</SelectItem>
             <SelectItem value="vegetables">Vegetables</SelectItem>
             <SelectItem value="fruits">Fruits</SelectItem>
             <SelectItem value="grains">Grains</SelectItem>
@@ -67,6 +91,11 @@ export default function Filters() {
               placeholder="Min"
               defaultValue={searchParams.get("minPrice") || ""}
               className="w-full"
+              ref={minInputRef}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setPriceRange([value, priceRange[1]]);
+              }}
             />
             <span className="text-muted-foreground">to</span>
             <Input
@@ -75,15 +104,21 @@ export default function Filters() {
               placeholder="Max"
               defaultValue={searchParams.get("maxPrice") || ""}
               className="w-full"
+              ref={maxInputRef}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setPriceRange([priceRange[0], value]);
+              }}
             />
           </div>
           <Slider
             defaultValue={[0, 1000]}
+            value={priceRange}
             min={0}
             max={1000}
             step={10}
             minStepsBetweenThumbs={1}
-            onValueChange={() => {}}
+            onValueChange={handleSliderChange}
           />
         </div>
       </div>
