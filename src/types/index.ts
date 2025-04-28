@@ -33,3 +33,21 @@ export interface CreateOrderParams {
   deliveryAddress: string;
   paymentProof: File;
 }
+
+export interface DashboardSidebarProps {
+  role: UserRole;
+}
+
+export interface StatusBadgeProps {
+  status:
+    | "PENDING_PAYMENT"
+    | "PAYMENT_RECEIVED"
+    | "READY_FOR_DELIVERY"
+    | "IN_TRANSIT"
+    | "DELIVERED"
+    | "CANCELLED"
+    | "PENDING"
+    | "ACCEPTED"
+    | "PICKED_UP";
+  className?: string;
+}

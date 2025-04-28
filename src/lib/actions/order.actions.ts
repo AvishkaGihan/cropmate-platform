@@ -51,3 +51,17 @@ export async function createOrder({
   revalidatePath("/dashboard/orders");
   return order;
 }
+
+export async function getCustomerOrders({ take }: { take?: number }) {
+  const session = await auth();
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  return await db.order.findMany({
+    where: { buyerId: session.user.id },
+    include: { crop: true },
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+}

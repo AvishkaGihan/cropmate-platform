@@ -57,6 +57,14 @@ const UserDropdown = ({ user }: UserDropdownProps) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
+          <Link
+            href={`/dashboard/${user.role?.toLowerCase()}`}
+            className="cursor-pointer"
+          >
+            Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/dashboard/settings" className="cursor-pointer">
             Settings
           </Link>
