@@ -79,3 +79,20 @@ export async function getFarmerOrders({ take }: { take?: number }) {
     take,
   });
 }
+
+export async function getRecentOrders({ take = 3 }: { take?: number } = {}) {
+  const session = await auth();
+  if (!session || session.user.role !== "FARMER") {
+    throw new Error("Unauthorized");
+  }
+
+  return await db.order.findMany({
+    where: { crop: { farmerId: session.user.id } },
+    include: {
+      crop: { select: { name: true } },
+      buyer: { select: { name: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+}

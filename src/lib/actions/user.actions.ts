@@ -98,3 +98,53 @@ export async function getCurrentUser() {
 
   return user;
 }
+
+export async function getFarmerStats() {
+  const session = await auth();
+  if (!session || session.user.role !== "FARMER") {
+    throw new Error("Unauthorized");
+  }
+
+  const [activeCrops, pendingOrders, completedOrders, deliveries] =
+    await Promise.all([
+      db.crop.count({
+        where: {
+          farmerId: session.user.id,
+          availableQuantity: { gt: 0 },
+        },
+      }),
+      db.order.count({
+        where: {
+          crop: { farmerId: session.user.id },
+          status: { in: ["PENDING_PAYMENT", "PAYMENT_RECEIVED"] },
+        },
+      }),
+      db.order.count({
+        where: {
+          crop: { farmerId: session.user.id },
+          status: "DELIVERED",
+          createdAt: {
+            gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+          },
+        },
+      }),
+      db.delivery.count({
+        where: {
+          order: { crop: { farmerId: session.user.id } },
+          status: { in: ["ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
+        },
+      }),
+    ]);
+
+  // Mock growth percentages (in a real app, calculate from previous period)
+  return {
+    activeCrops,
+    cropsChange: Math.floor(Math.random() * 20) + 5,
+    pendingOrders,
+    ordersChange: Math.floor(Math.random() * 15) + 5,
+    totalRevenue: completedOrders * 100, // Mock average order value
+    revenueChange: Math.floor(Math.random() * 25) + 5,
+    activeDeliveries: deliveries,
+    deliveriesChange: Math.floor(Math.random() * 15) + 5,
+  };
+}

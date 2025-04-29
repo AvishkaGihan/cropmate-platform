@@ -138,3 +138,16 @@ export async function deleteCrop(id: string) {
     );
   }
 }
+
+export async function getRecentCrops({ take = 3 }: { take?: number } = {}) {
+  const session = await auth();
+  if (!session || session.user.role !== "FARMER") {
+    throw new Error("Unauthorized");
+  }
+
+  return await db.crop.findMany({
+    where: { farmerId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+}
