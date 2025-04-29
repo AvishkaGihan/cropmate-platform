@@ -96,3 +96,132 @@ export async function getRecentOrders({ take = 3 }: { take?: number } = {}) {
     take,
   });
 }
+
+export async function confirmPayment(orderId: string) {
+  const session = await auth();
+  if (!session || session.user.role !== "FARMER") {
+    throw new Error("Unauthorized");
+  }
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: { crop: true },
+  });
+
+  if (!order || order.crop.farmerId !== session.user.id) {
+    throw new Error("Order not found or unauthorized");
+  }
+
+  if (order.status !== "PENDING_PAYMENT") {
+    throw new Error("Order is not in pending payment status");
+  }
+
+  await db.$transaction([
+    db.order.update({
+      where: { id: orderId },
+      data: { status: "PAYMENT_RECEIVED" },
+    }),
+    db.delivery.create({
+      data: {
+        orderId,
+        status: "PENDING",
+      },
+    }),
+  ]);
+
+  revalidatePath("/dashboard/farmer/orders");
+  revalidatePath(`/orders/${orderId}`);
+}
+
+export async function rejectPayment(orderId: string) {
+  const session = await auth();
+  if (!session || session.user.role !== "farmer") {
+    throw new Error("Unauthorized");
+  }
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: { crop: true },
+  });
+
+  if (!order || order.crop.farmerId !== session.user.id) {
+    throw new Error("Order not found or unauthorized");
+  }
+
+  if (order.status !== "PENDING_PAYMENT") {
+    throw new Error("Order is not in pending payment status");
+  }
+
+  await db.order.update({
+    where: { id: orderId },
+    data: {
+      status: "PENDING_PAYMENT",
+      paymentProof: null,
+    },
+  });
+
+  revalidatePath("/dashboard/farmer/orders");
+  revalidatePath(`/orders/${orderId}`);
+}
+
+export async function markAsReadyForDelivery(orderId: string) {
+  const session = await auth();
+  if (!session || session.user.role !== "farmer") {
+    throw new Error("Unauthorized");
+  }
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: { crop: true },
+  });
+
+  if (!order || order.crop.farmerId !== session.user.id) {
+    throw new Error("Order not found or unauthorized");
+  }
+
+  if (order.status !== "PAYMENT_RECEIVED") {
+    throw new Error("Order must have payment received first");
+  }
+
+  await db.order.update({
+    where: { id: orderId },
+    data: { status: "READY_FOR_DELIVERY" },
+  });
+
+  revalidatePath("/dashboard/farmer/orders");
+  revalidatePath(`/orders/${orderId}`);
+}
+
+export async function cancelOrder(orderId: string) {
+  const session = await auth();
+  if (!session || session.user.role !== "farmer") {
+    throw new Error("Unauthorized");
+  }
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: { crop: true },
+  });
+
+  if (!order || order.crop.farmerId !== session.user.id) {
+    throw new Error("Order not found or unauthorized");
+  }
+
+  if (order.status === "DELIVERED" || order.status === "CANCELLED") {
+    throw new Error(`Order cannot be cancelled in ${order.status} status`);
+  }
+
+  await db.$transaction([
+    db.order.update({
+      where: { id: orderId },
+      data: { status: "CANCELLED" },
+    }),
+    db.delivery.updateMany({
+      where: { orderId },
+      data: { status: "CANCELLED" },
+    }),
+  ]);
+
+  revalidatePath("/dashboard/farmer/orders");
+  revalidatePath(`/orders/${orderId}`);
+}

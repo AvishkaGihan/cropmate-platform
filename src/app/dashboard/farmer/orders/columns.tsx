@@ -5,6 +5,10 @@ import Link from "next/link";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import OrderStatusBadge from "@/components/orders/status-badge";
 import { Order } from "@/app/generated/prisma";
+import { PaymentProofModal } from "@/components/orders/payment-proof-modal";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { StatusUpdate } from "@/components/orders/status-update";
 
 export const columns: ColumnDef<
   Order & {
@@ -55,5 +59,35 @@ export const columns: ColumnDef<
     accessorKey: "createdAt",
     header: "Date",
     cell: ({ row }) => formatDate(row.original.createdAt),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const [showPaymentProof, setShowPaymentProof] = useState(false);
+      const order = row.original;
+
+      return (
+        <div className="flex items-center gap-2">
+          {order.paymentProof && order.status === "PENDING_PAYMENT" && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPaymentProof(true)}
+              >
+                Review Payment
+              </Button>
+              <PaymentProofModal
+                orderId={order.id}
+                paymentProof={order.paymentProof}
+                open={showPaymentProof}
+                onOpenChange={setShowPaymentProof}
+              />
+            </>
+          )}
+          <StatusUpdate orderId={order.id} currentStatus={order.status} />
+        </div>
+      );
+    },
   },
 ];
