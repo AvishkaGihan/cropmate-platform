@@ -1,4 +1,4 @@
-import { CropCategory } from "@/app/generated/prisma";
+import { Crop, CropCategory } from "@/app/generated/prisma";
 
 export type UserRole = "CUSTOMER" | "FARMER" | "DRIVER";
 
@@ -50,4 +50,8 @@ export interface StatusBadgeProps {
     | "ACCEPTED"
     | "PICKED_UP";
   className?: string;
+}
+
+export interface CropsTableProps {
+  crop: Crop[];
 }

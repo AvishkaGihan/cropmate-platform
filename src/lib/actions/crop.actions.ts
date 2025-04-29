@@ -4,6 +4,7 @@ import db from "@/lib/db";
 import { Prisma } from "@/app/generated/prisma";
 import { CropSearchParams } from "@/types";
 import { notFound } from "next/navigation";
+import { auth } from "@/auth";
 
 export async function getCrops(searchParams: CropSearchParams) {
   try {
@@ -87,5 +88,53 @@ export async function getCropById(id: string) {
   } catch (error) {
     console.error(`Failed to fetch crop with ID ${id}:`, error);
     throw new Error("Failed to fetch crop details");
+  }
+}
+
+export async function getFarmerCrops({ take }: { take?: number }) {
+  const session = await auth();
+  if (!session || session.user.role !== "FARMER") {
+    throw new Error("Unauthorized");
+  }
+
+  return await db.crop.findMany({
+    where: { farmerId: session.user.id },
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+}
+
+export async function deleteCrop(id: string) {
+  try {
+    const session = await auth();
+    if (!session || session.user.role !== "FARMER") {
+      throw new Error("Unauthorized");
+    }
+
+    const crop = await db.crop.findFirst({
+      where: {
+        id,
+        farmerId: session.user.id,
+      },
+    });
+
+    if (!crop) {
+      throw new Error(
+        "Crop not found or you don't have permission to delete it"
+      );
+    }
+
+    await db.crop.delete({
+      where: {
+        id,
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete crop:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to delete crop"
+    );
   }
 }
