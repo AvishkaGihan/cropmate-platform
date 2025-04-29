@@ -3,8 +3,98 @@
 import db from "@/lib/db";
 import { Prisma } from "@/app/generated/prisma";
 import { CropSearchParams } from "@/types";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { cropSchema } from "../schemas";
+import { uploadImage } from "../cloudinary";
+import { revalidatePath } from "next/cache";
+
+export async function createCrop(formData: FormData) {
+  try {
+    const session = await auth();
+    if (!session || session.user.role !== "FARMER") {
+      return {
+        error: "Unauthorized: Only farmers can create crops",
+        message: "Unauthorized: Only farmers can create crops",
+      };
+    }
+
+    // Get existingImage value first and handle empty string
+    const existingImage = formData.get("existingImage");
+
+    // Parse and validate form data
+    const validatedFields = cropSchema.safeParse({
+      name: formData.get("name"),
+      description: formData.get("description") || "",
+      category: formData.get("category"),
+      pricePerUnit: Number(formData.get("pricePerUnit")),
+      availableQuantity: Number(formData.get("availableQuantity")),
+      unit: formData.get("unit"),
+      harvestDate: new Date(formData.get("harvestDate") as string),
+      location: formData.get("location"),
+      image: formData.get("image"),
+      existingImage: existingImage ? String(existingImage) : undefined,
+    });
+
+    console.log(
+      "Parsed fields:",
+      validatedFields.success ? validatedFields.data : validatedFields.error
+    );
+
+    if (!validatedFields.success) {
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+        message: "Validation failed",
+      };
+    }
+
+    let imageUrl = validatedFields.data.existingImage || "";
+
+    const imageFile = validatedFields.data.image;
+    if (imageFile instanceof File && imageFile.size > 0) {
+      try {
+        const result = (await uploadImage(imageFile)) as { secure_url: string };
+        if (!result.secure_url) {
+          throw new Error("Failed to get secure URL from upload");
+        }
+        imageUrl = result.secure_url;
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        return {
+          error: "Image upload failed",
+          message: "Failed to upload crop image. Please try again.",
+        };
+      }
+    }
+
+    const crop = await db.crop.create({
+      data: {
+        name: validatedFields.data.name,
+        description: validatedFields.data.description || "",
+        category: validatedFields.data.category,
+        pricePerUnit: validatedFields.data.pricePerUnit,
+        availableQuantity: validatedFields.data.availableQuantity,
+        unit: validatedFields.data.unit,
+        harvestDate: validatedFields.data.harvestDate,
+        location: validatedFields.data.location,
+        imageUrl: imageUrl,
+        farmerId: session.user.id,
+      },
+    });
+
+    revalidatePath("/dashboard/crops");
+
+    return {
+      message: "Crop created successfully",
+    };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return {
+      error: "Database error",
+      message: "Failed to create crop. Please try again later.",
+    };
+  }
+}
 
 export async function getCrops(searchParams: CropSearchParams) {
   try {
