@@ -96,6 +96,109 @@ export async function createCrop(formData: FormData) {
   }
 }
 
+export async function updateCrop(id: string, formData: FormData) {
+  try {
+    const session = await auth();
+    if (!session || session.user.role !== "FARMER") {
+      return {
+        error: "Unauthorized: Only farmers can update crops",
+        message: "Unauthorized: Only farmers can update crops",
+      };
+    }
+
+    // Check if the crop exists and belongs to the current farmer
+    const existingCrop = await db.crop.findFirst({
+      where: {
+        id,
+        farmerId: session.user.id,
+      },
+    });
+
+    if (!existingCrop) {
+      return {
+        error: "Not found",
+        message: "Crop not found or you don't have permission to edit it",
+      };
+    }
+
+    const existingImage = formData.get("existingImage");
+
+    const imageInput = formData.get("image");
+    const validatedFields = cropSchema.safeParse({
+      name: formData.get("name"),
+      description: formData.get("description") || "",
+      category: formData.get("category"),
+      pricePerUnit: Number(formData.get("pricePerUnit")),
+      availableQuantity: Number(formData.get("availableQuantity")),
+      unit: formData.get("unit"),
+      harvestDate: new Date(formData.get("harvestDate") as string),
+      location: formData.get("location"),
+      image: imageInput instanceof File ? imageInput : undefined,
+      existingImage: existingImage ? String(existingImage) : undefined,
+    });
+
+    console.log(
+      "Parsed fields for update:",
+      validatedFields.success ? validatedFields.data : validatedFields.error
+    );
+
+    if (!validatedFields.success) {
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+        message: "Validation failed",
+      };
+    }
+
+    // Handle image processing
+    let imageUrl = existingCrop.imageUrl;
+
+    const imageFile = validatedFields.data.image;
+    if (imageFile instanceof File && imageFile.size > 0) {
+      try {
+        const result = (await uploadImage(imageFile)) as { secure_url: string };
+        if (!result.secure_url) {
+          throw new Error("Failed to get secure URL from upload");
+        }
+        imageUrl = result.secure_url;
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        return {
+          error: "Image upload failed",
+          message: "Failed to upload crop image. Please try again.",
+        };
+      }
+    }
+
+    // Update the crop in the database
+    await db.crop.update({
+      where: { id },
+      data: {
+        name: validatedFields.data.name,
+        description: validatedFields.data.description || "",
+        category: validatedFields.data.category,
+        pricePerUnit: validatedFields.data.pricePerUnit,
+        availableQuantity: validatedFields.data.availableQuantity,
+        unit: validatedFields.data.unit,
+        harvestDate: validatedFields.data.harvestDate,
+        location: validatedFields.data.location,
+        imageUrl: imageUrl,
+      },
+    });
+
+    revalidatePath("/dashboard/farmer/crops");
+
+    return {
+      message: "Crop updated successfully",
+    };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return {
+      error: "Database error",
+      message: "Failed to update crop. Please try again later.",
+    };
+  }
+}
+
 export async function getCrops(searchParams: CropSearchParams) {
   try {
     const { q, category, minPrice, maxPrice, location } = searchParams;

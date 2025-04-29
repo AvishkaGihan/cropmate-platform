@@ -100,8 +100,6 @@ const CropForm = ({
         formData.append("existingImage", values.existingImage);
       }
 
-      console.log("Submitting form with data:", Object.fromEntries(formData));
-
       const result = await action(formData);
 
       if (result.errors || result.error) {
