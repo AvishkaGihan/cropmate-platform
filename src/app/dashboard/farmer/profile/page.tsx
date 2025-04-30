@@ -1,21 +1,37 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getCurrentUser } from "@/lib/actions/user.actions";
+import { User, Building2, Landmark } from "lucide-react";
 
 export default async function FarmerProfilePage() {
   const user = await getCurrentUser();
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Farmer Profile</h1>
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold">Farmer Profile</h1>
+          <p className="text-muted-foreground">
+            Manage your personal and payment information
+          </p>
+        </div>
       </div>
 
-      <Card>
+      <Card className="shadow-sm border-green-100 dark:border-green-900/30">
         <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
+          <div className="flex items-center gap-2">
+            <User className="h-5 w-5 text-primary" />
+            <CardTitle>Personal Information</CardTitle>
+          </div>
+          <CardDescription>Your basic profile information</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -35,41 +51,52 @@ export default async function FarmerProfilePage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="shadow-sm border-green-100 dark:border-green-900/30">
         <CardHeader>
-          <CardTitle>Bank Details</CardTitle>
+          <div className="flex items-center gap-2">
+            <Landmark className="h-5 w-5 text-primary" />
+            <CardTitle>Bank Details</CardTitle>
+          </div>
+          <CardDescription>
+            Required for receiving payments from customers
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="accountName">Account Name</Label>
-            <Input
-              id="accountName"
-              defaultValue={user?.bankDetails?.accountName || ""}
-            />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="accountName">Account Name</Label>
+              <Input
+                id="accountName"
+                defaultValue={user?.bankDetails?.accountName || ""}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="accountNumber">Account Number</Label>
+              <Input
+                id="accountNumber"
+                defaultValue={user?.bankDetails?.accountNumber || ""}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bankName">Bank Name</Label>
+              <Input
+                id="bankName"
+                defaultValue={user?.bankDetails?.bankName || ""}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="branch">Branch (Optional)</Label>
+              <Input
+                id="branch"
+                defaultValue={user?.bankDetails?.branch || ""}
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="accountNumber">Account Number</Label>
-            <Input
-              id="accountNumber"
-              defaultValue={user?.bankDetails?.accountNumber || ""}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bankName">Bank Name</Label>
-            <Input
-              id="bankName"
-              defaultValue={user?.bankDetails?.bankName || ""}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="branch">Branch (Optional)</Label>
-            <Input id="branch" defaultValue={user?.bankDetails?.branch || ""} />
-          </div>
-
-          <Button className="mt-4">Update Profile</Button>
+          <Button className="mt-6 w-full sm:w-auto">Update Profile</Button>
         </CardContent>
       </Card>
     </div>

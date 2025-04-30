@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -59,26 +60,39 @@ export function PaymentProofModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
-        <DialogHeader>
-          <DialogTitle>Payment Proof Review</DialogTitle>
+      <DialogContent className="sm:max-w-[700px]">
+        <DialogHeader className="space-y-2">
+          <DialogTitle className="text-2xl font-semibold">
+            Payment Proof Review
+          </DialogTitle>
+          <DialogDescription>
+            Please verify the payment proof image before confirming or rejecting
+            the payment.
+          </DialogDescription>
         </DialogHeader>
-        <div className="relative h-96 w-full rounded-md overflow-hidden">
+        <div className="relative h-[450px] w-full rounded-lg overflow-hidden border border-gray-200 shadow-sm">
           <Image
             src={paymentProof}
             alt="Payment proof"
             fill
-            className="object-contain"
+            className="object-contain bg-gray-50"
+            quality={100}
           />
         </div>
-        <div className="flex justify-end gap-2 pt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+        <div className="flex justify-end gap-3 pt-6">
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            className="px-6"
+          >
             Close
           </Button>
-          <Button variant="destructive" onClick={handleReject}>
+          <Button variant="destructive" onClick={handleReject} className="px-6">
             Reject Payment
           </Button>
-          <Button onClick={handleConfirm}>Confirm Payment</Button>
+          <Button onClick={handleConfirm} className="px-6">
+            Confirm Payment
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

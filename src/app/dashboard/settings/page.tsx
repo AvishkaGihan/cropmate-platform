@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -8,46 +14,77 @@ import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { ModeToggle } from "@/components/ui/modeToggle";
+import {
+  Bell,
+  Key,
+  Paintbrush,
+  Save,
+  Trash,
+  User,
+  type LucideIcon,
+} from "lucide-react";
+
+const Icons = {
+  bell: Bell,
+  key: Key,
+  paintbrush: Paintbrush,
+  save: Save,
+  trash: Trash,
+  user: User,
+} satisfies Record<string, LucideIcon>;
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Handle theme change from switch
   const handleThemeChange = (checked: boolean) => {
     setTheme(checked ? "dark" : "light");
   };
 
-  // Only show the theme options when mounted to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-4xl mx-auto space-y-8 py-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Settings</h1>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your account preferences and settings.
+          </p>
+        </div>
         <ModeToggle />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Notifications</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Icons.bell className="h-5 w-5" />
+            Notifications
+          </CardTitle>
+          <CardDescription>
+            Configure how you receive notifications.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="email-notifications">Email notifications</Label>
+              <Label className="text-base" htmlFor="email-notifications">
+                Email notifications
+              </Label>
               <p className="text-sm text-muted-foreground">
                 Receive email notifications for updates and alerts
               </p>
             </div>
             <Switch id="email-notifications" defaultChecked={true} />
           </div>
-          <Separator />
+          <Separator className="my-4" />
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="marketing">Marketing emails</Label>
+              <Label className="text-base" htmlFor="marketing">
+                Marketing emails
+              </Label>
               <p className="text-sm text-muted-foreground">
                 Receive emails about new features and promotions
               </p>
@@ -59,12 +96,20 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Appearance</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Icons.paintbrush className="h-5 w-5" />
+            Appearance
+          </CardTitle>
+          <CardDescription>
+            Customize the appearance of the app.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent>
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="theme">Dark mode</Label>
+              <Label className="text-base" htmlFor="theme">
+                Dark mode
+              </Label>
               <p className="text-sm text-muted-foreground">
                 Toggle between light and dark theme
               </p>
@@ -82,21 +127,33 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Account</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Icons.user className="h-5 w-5" />
+            Account
+          </CardTitle>
+          <CardDescription>
+            Manage your account settings and preferences.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences
-          </p>
-          <div className="flex gap-4">
-            <Button variant="outline">Change Password</Button>
-            <Button variant="destructive">Delete Account</Button>
+        <CardContent className="space-y-6">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <Button variant="outline" className="w-full sm:w-auto">
+              <Icons.key className="mr-2 h-4 w-4" />
+              Change Password
+            </Button>
+            <Button variant="destructive" className="w-full sm:w-auto">
+              <Icons.trash className="mr-2 h-4 w-4" />
+              Delete Account
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       <div className="flex justify-end">
-        <Button>Save Changes</Button>
+        <Button size="lg">
+          <Icons.save className="mr-2 h-4 w-4" />
+          Save Changes
+        </Button>
       </div>
     </div>
   );
