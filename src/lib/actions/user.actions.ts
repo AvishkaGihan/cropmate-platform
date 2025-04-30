@@ -105,8 +105,17 @@ export async function getFarmerStats() {
     throw new Error("Unauthorized");
   }
 
-  const [activeCrops, pendingOrders, completedOrders, deliveries] =
-    await Promise.all([
+  // Fix date calculations
+  const currentDate = new Date();
+  const lastMonth = new Date();
+  lastMonth.setMonth(currentDate.getMonth() - 1);
+
+  const twoMonthsAgo = new Date();
+  twoMonthsAgo.setMonth(currentDate.getMonth() - 2);
+
+  const [currentPeriod, previousPeriod] = await Promise.all([
+    // Current period (last 30 days)
+    Promise.all([
       db.crop.count({
         where: {
           farmerId: session.user.id,
@@ -119,13 +128,14 @@ export async function getFarmerStats() {
           status: { in: ["PENDING_PAYMENT", "PAYMENT_RECEIVED"] },
         },
       }),
-      db.order.count({
+      db.order.findMany({
         where: {
           crop: { farmerId: session.user.id },
-          status: "DELIVERED",
-          createdAt: {
-            gte: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-          },
+          status: "PAYMENT_RECEIVED", // Changed from DELIVERED to include paid orders
+          createdAt: { gte: lastMonth },
+        },
+        include: {
+          crop: true,
         },
       }),
       db.delivery.count({
@@ -134,18 +144,89 @@ export async function getFarmerStats() {
           status: { in: ["ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
         },
       }),
-    ]);
+    ]),
+    // Previous period stats
+    Promise.all([
+      db.crop.count({
+        where: {
+          farmerId: session.user.id,
+          createdAt: {
+            gte: twoMonthsAgo,
+            lt: lastMonth,
+          },
+          availableQuantity: { gt: 0 },
+        },
+      }),
+      db.order.count({
+        where: {
+          crop: { farmerId: session.user.id },
+          status: { in: ["PENDING_PAYMENT", "PAYMENT_RECEIVED"] },
+          createdAt: {
+            gte: twoMonthsAgo,
+            lt: lastMonth,
+          },
+        },
+      }),
+      db.order.findMany({
+        where: {
+          crop: { farmerId: session.user.id },
+          status: "PAYMENT_RECEIVED", // Changed from DELIVERED to include paid orders
+          createdAt: {
+            gte: twoMonthsAgo,
+            lt: lastMonth,
+          },
+        },
+        include: {
+          crop: true,
+        },
+      }),
+      db.delivery.count({
+        where: {
+          order: { crop: { farmerId: session.user.id } },
+          status: { in: ["ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
+          createdAt: {
+            gte: twoMonthsAgo,
+            lt: lastMonth,
+          },
+        },
+      }),
+    ]),
+  ]);
 
-  // Mock growth percentages (in a real app, calculate from previous period)
+  const [activeCrops, pendingOrders, currentDeliveredOrders, activeDeliveries] =
+    currentPeriod;
+  const [
+    prevActiveCrops,
+    prevPendingOrders,
+    prevDeliveredOrders,
+    prevDeliveries,
+  ] = previousPeriod;
+
+  // Calculate current period total revenue from PAYMENT_RECEIVED orders
+  const currentRevenue = currentDeliveredOrders.reduce((total, order) => {
+    return total + order.totalPrice; // Using totalPrice directly from order
+  }, 0);
+
+  // Calculate previous period total revenue
+  const previousRevenue = prevDeliveredOrders.reduce((total, order) => {
+    return total + order.totalPrice; // Using totalPrice directly from order
+  }, 0);
+
+  // Calculate percentage changes
+  const calculateChange = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return Math.round(((current - previous) / previous) * 100);
+  };
+
   return {
     activeCrops,
-    cropsChange: Math.floor(Math.random() * 20) + 5,
+    cropsChange: calculateChange(activeCrops, prevActiveCrops),
     pendingOrders,
-    ordersChange: Math.floor(Math.random() * 15) + 5,
-    totalRevenue: completedOrders * 100, // Mock average order value
-    revenueChange: Math.floor(Math.random() * 25) + 5,
-    activeDeliveries: deliveries,
-    deliveriesChange: Math.floor(Math.random() * 15) + 5,
+    ordersChange: calculateChange(pendingOrders, prevPendingOrders),
+    totalRevenue: Math.round(currentRevenue * 100) / 100, // Round to 2 decimal places
+    revenueChange: calculateChange(currentRevenue, previousRevenue),
+    activeDeliveries,
+    deliveriesChange: calculateChange(activeDeliveries, prevDeliveries),
   };
 }
 
