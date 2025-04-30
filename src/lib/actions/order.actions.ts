@@ -225,3 +225,26 @@ export async function cancelOrder(orderId: string) {
   revalidatePath("/dashboard/farmer/orders");
   revalidatePath(`/orders/${orderId}`);
 }
+
+export async function getOrderById(id: string) {
+  return await db.order.findUnique({
+    where: { id },
+    include: {
+      crop: {
+        include: {
+          farmer: {
+            include: {
+              bankDetails: true,
+            },
+          },
+        },
+      },
+      delivery: {
+        include: {
+          driver: true,
+        },
+      },
+      buyer: true,
+    },
+  });
+}
