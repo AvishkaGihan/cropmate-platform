@@ -116,46 +116,46 @@ const OrderForm = ({ crop }: OrderFormProps) => {
           <h3 className="text-lg font-semibold mb-3">
             Bank Transfer Information
           </h3>
-          <div className="space-y-3 p-5 bg-blue-50 rounded-lg border border-blue-100">
+          <div className="space-y-3 p-5 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/50">
             <div className="grid grid-cols-2 gap-2">
-              <span className="text-sm font-medium text-blue-700">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Account Name
               </span>
-              <span className="text-sm text-blue-900">
+              <span className="text-sm text-blue-900 dark:text-blue-300">
                 {crop.farmer.bankDetails.accountName}
               </span>
 
-              <span className="text-sm font-medium text-blue-700">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Account Number
               </span>
-              <span className="text-sm text-blue-900">
+              <span className="text-sm text-blue-900 dark:text-blue-300">
                 {crop.farmer.bankDetails.accountNumber}
               </span>
 
-              <span className="text-sm font-medium text-blue-700">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Bank Name
               </span>
-              <span className="text-sm text-blue-900">
+              <span className="text-sm text-blue-900 dark:text-blue-300">
                 {crop.farmer.bankDetails.bankName}
               </span>
 
               {crop.farmer.bankDetails.branch && (
                 <>
-                  <span className="text-sm font-medium text-blue-700">
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                     Branch
                   </span>
-                  <span className="text-sm text-blue-900">
+                  <span className="text-sm text-blue-900 dark:text-blue-300">
                     {crop.farmer.bankDetails.branch}
                   </span>
                 </>
               )}
             </div>
 
-            <div className="border-t border-blue-200 mt-3 pt-3 flex justify-between items-center">
-              <span className="text-sm font-medium text-blue-700">
+            <div className="border-t border-blue-200 dark:border-blue-900/50 mt-3 pt-3 flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Transfer Amount
               </span>
-              <span className="text-lg font-bold text-blue-900">
+              <span className="text-lg font-bold text-blue-900 dark:text-blue-300">
                 ${totalPrice.toFixed(2)}
               </span>
             </div>
@@ -164,14 +164,14 @@ const OrderForm = ({ crop }: OrderFormProps) => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <div className="border rounded-lg p-5">
+            <div className="border border-border rounded-lg p-5">
               <div className="space-y-3">
                 <Label htmlFor="paymentProof" className="font-medium">
                   Upload Payment Proof
                 </Label>
                 <div className="flex flex-col sm:flex-row items-center gap-4">
                   {paymentProof ? (
-                    <div className="relative h-40 w-full sm:w-40 rounded-md overflow-hidden border">
+                    <div className="relative h-40 w-full sm:w-40 rounded-md overflow-hidden border border-border">
                       <Image
                         src={paymentProof}
                         alt="Payment proof preview"
@@ -180,8 +180,8 @@ const OrderForm = ({ crop }: OrderFormProps) => {
                       />
                     </div>
                   ) : (
-                    <div className="h-40 w-full sm:w-40 rounded-md bg-gray-100 border border-dashed flex items-center justify-center">
-                      <p className="text-sm text-gray-500 text-center px-2">
+                    <div className="h-40 w-full sm:w-40 rounded-md bg-muted border border-dashed border-border flex items-center justify-center">
+                      <p className="text-sm text-muted-foreground text-center px-2">
                         No image uploaded
                       </p>
                     </div>
@@ -218,9 +218,9 @@ const OrderForm = ({ crop }: OrderFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        <div className="bg-green-50 rounded-lg p-4 border border-green-100 mb-2">
-          <h3 className="font-medium text-green-800 mb-1">Order Summary</h3>
-          <p className="text-sm text-green-700">
+        <div className="bg-primary/10 rounded-lg p-4 border border-primary/20 mb-2">
+          <h3 className="font-medium text-foreground mb-1">Order Summary</h3>
+          <p className="text-sm text-muted-foreground">
             Available:{" "}
             <span className="font-medium">
               {crop.availableQuantity} {crop.unit}
@@ -296,7 +296,7 @@ const OrderForm = ({ crop }: OrderFormProps) => {
           )}
         />
 
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2 border border-gray-100 mt-4">
+        <div className="bg-muted/50 rounded-lg p-4 space-y-2 border border-border mt-4">
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">
               Price per {crop.unit}
@@ -311,7 +311,7 @@ const OrderForm = ({ crop }: OrderFormProps) => {
               {quantity} {crop.unit}
             </span>
           </div>
-          <div className="border-t border-gray-200 my-2 pt-2 flex justify-between font-medium">
+          <div className="border-t border-border my-2 pt-2 flex justify-between font-medium">
             <span>Total</span>
             <span className="text-primary">${totalPrice.toFixed(2)}</span>
           </div>

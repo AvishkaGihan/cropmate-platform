@@ -11,6 +11,7 @@ import { auth } from "@/auth";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -37,11 +38,11 @@ export default async function OrderPage({ params }: PageProps) {
   }
 
   return (
-    <div className="container mx-auto py-12 min-h-screen">
+    <div className="container mx-auto py-8 md:py-12 px-4 md:px-6 min-h-screen">
       <div className="mb-8">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
           <div>
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               Order #{order.id.slice(0, 8)}
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -52,15 +53,16 @@ export default async function OrderPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-8">
+      <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+        <div className="md:col-span-2 space-y-6 md:space-y-8">
           {/* Order Details Card */}
-          <Card className="p-8 shadow-md">
-            <h2 className="text-2xl font-semibold mb-6 border-b pb-2">
+          <Card className="p-6 md:p-8 border shadow-sm dark:shadow-none dark:bg-card/50">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4">
               Order Details
             </h2>
+            <Separator className="mb-6" />
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <p className="text-muted-foreground text-sm">Crop</p>
                   <p className="font-medium text-lg">
@@ -96,10 +98,11 @@ export default async function OrderPage({ params }: PageProps) {
           </Card>
 
           {/* Delivery Information Card */}
-          <Card className="p-8 shadow-md">
-            <h2 className="text-2xl font-semibold mb-6 border-b pb-2">
+          <Card className="p-6 md:p-8 border shadow-sm dark:shadow-none dark:bg-card/50">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4">
               Delivery Information
             </h2>
+            <Separator className="mb-6" />
             <div className="space-y-6">
               <div>
                 <p className="text-muted-foreground text-sm">
@@ -117,10 +120,10 @@ export default async function OrderPage({ params }: PageProps) {
                     <OrderStatusBadge status={order.delivery.status} />
                   </div>
                   {order.delivery.driver && (
-                    <div className="bg-muted/30 p-4 rounded-lg">
+                    <div className="bg-muted/30 dark:bg-muted/10 p-4 rounded-lg">
                       <p className="text-muted-foreground text-sm">Driver</p>
                       <p className="font-medium text-lg flex items-center gap-2">
-                        <span className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center">
+                        <span className="h-6 w-6 rounded-full bg-primary/20 dark:bg-primary/10 flex items-center justify-center">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -161,14 +164,15 @@ export default async function OrderPage({ params }: PageProps) {
         <div className="space-y-6">
           {/* Payment Proof Section - Hidden from drivers */}
           {order.paymentProof && !isDriver && (
-            <Card className="p-6">
+            <Card className="p-6 border shadow-sm dark:shadow-none dark:bg-card/50">
               <h2 className="text-xl font-semibold mb-4">Payment Proof</h2>
-              <div className="relative h-64 w-full rounded-md overflow-hidden">
+              <div className="relative h-64 w-full rounded-md overflow-hidden bg-muted/50 dark:bg-muted/20">
                 <Image
                   src={order.paymentProof}
                   alt="Payment proof"
                   fill
                   className="object-contain"
+                  loading="lazy"
                 />
               </div>
               {isFarmer && order.status === "PENDING_PAYMENT" && (
@@ -188,15 +192,20 @@ export default async function OrderPage({ params }: PageProps) {
 
           {/* Farmer Actions */}
           {isFarmer && order.status === "PAYMENT_RECEIVED" && (
-            <Card className="p-8 shadow-md bg-gradient-to-br from-white to-green-50 border-green-200">
-              <h2 className="text-2xl font-semibold mb-4 text-green-800">
+            <Card className="p-6 md:p-8 border shadow-sm dark:shadow-none bg-gradient-to-br from-white to-green-50 dark:from-green-950/20 dark:to-green-900/10 border-green-200 dark:border-green-800/30">
+              <h2 className="text-xl md:text-2xl font-semibold mb-4 text-green-800 dark:text-green-400">
                 Prepare Order
               </h2>
               <p className="text-muted-foreground mb-6">
                 Once you've prepared the order, mark it as ready for delivery
               </p>
               <form action={markAsReadyForDelivery.bind(null, order.id)}>
-                <Button type="submit" className="w-full text-lg py-6" size="lg">
+                <Button
+                  type="submit"
+                  className="w-full py-6 text-base"
+                  variant="default"
+                  size="lg"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -218,8 +227,8 @@ export default async function OrderPage({ params }: PageProps) {
           )}
 
           {/* Support Card */}
-          <Card className="p-8 shadow-md bg-gradient-to-br from-white to-blue-50 border-blue-100">
-            <h2 className="text-2xl font-semibold mb-4 text-blue-800">
+          <Card className="p-6 md:p-8 border shadow-sm dark:shadow-none bg-gradient-to-br from-white to-blue-50 dark:from-blue-950/20 dark:to-blue-900/10 border-blue-100 dark:border-blue-800/30">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 text-blue-800 dark:text-blue-400">
               Need Help?
             </h2>
             <p className="text-muted-foreground mb-6">
@@ -227,7 +236,7 @@ export default async function OrderPage({ params }: PageProps) {
             </p>
             <Button
               variant="outline"
-              className="w-full text-lg py-6 border-blue-200 hover:bg-blue-100/50"
+              className="w-full py-6 text-base border-blue-200 hover:bg-blue-100/50 dark:border-blue-800 dark:hover:bg-blue-900/20"
               size="lg"
               asChild
             >
