@@ -24,8 +24,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Leaf, Mail, Lock, User } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -40,6 +49,11 @@ export default function LoginPage() {
       role: "CUSTOMER",
     },
   });
+
+  // Update role based on tab
+  const updateRole = (newRole: string) => {
+    form.setValue("role", newRole as "CUSTOMER" | "FARMER" | "DRIVER");
+  };
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
@@ -64,89 +78,131 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container mx-auto flex h-screen w-screen flex-col items-center justify-center">
-      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-        <div className="flex flex-col space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your credentials to sign in
-          </p>
-        </div>
+    <div className="container mx-auto flex min-h-screen items-center justify-center py-10">
+      <Card className="w-full max-w-[450px] shadow-lg border-primary/10">
+        <CardHeader className="space-y-3 text-center pb-6">
+          <div className="flex justify-center mb-2">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Leaf className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold">
+            Welcome to CropMate
+          </CardTitle>
+          <CardDescription className="text-sm text-muted-foreground">
+            Enter your credentials to sign in to your account
+          </CardDescription>
+        </CardHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="your@email.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Login as</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="CUSTOMER">Customer</SelectItem>
-                      <SelectItem value="FARMER">Farmer</SelectItem>
-                      <SelectItem value="DRIVER">Driver</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full cursor-pointer">
-              Sign In
-            </Button>
-          </form>
-        </Form>
-
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link
-            href="/register"
-            className="underline underline-offset-4 hover:text-primary"
+        <CardContent>
+          <Tabs
+            defaultValue="CUSTOMER"
+            className="mb-6"
+            onValueChange={(value) => updateRole(value)}
           >
-            Sign up
+            <TabsList className="grid grid-cols-3 mb-6">
+              <TabsTrigger
+                value="CUSTOMER"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <User className="h-4 w-4" /> Customer
+              </TabsTrigger>
+              <TabsTrigger
+                value="FARMER"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Leaf className="h-4 w-4" /> Farmer
+              </TabsTrigger>
+              <TabsTrigger
+                value="DRIVER"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Lock className="h-4 w-4" /> Driver
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <FormControl>
+                        <Input
+                          placeholder="your@email.com"
+                          {...field}
+                          className="pl-10 h-11"
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          {...field}
+                          className="pl-10 h-11"
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="hidden">
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full h-11 mt-2 cursor-pointer">
+                Sign In
+              </Button>
+            </form>
+          </Form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-muted"></div>
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-card px-2 text-muted-foreground">
+                Don't have an account?
+              </span>
+            </div>
+          </div>
+
+          <Link href="/register">
+            <Button variant="outline" className="w-full h-11">
+              Create an account
+            </Button>
           </Link>
-        </p>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
