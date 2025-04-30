@@ -60,7 +60,16 @@ export async function getCustomerOrders({ take }: { take?: number }) {
 
   return await db.order.findMany({
     where: { buyerId: session.user.id },
-    include: { crop: true },
+    include: {
+      crop: {
+        include: {
+          farmer: {
+            select: { name: true },
+          },
+        },
+      },
+      delivery: true,
+    },
     orderBy: { createdAt: "desc" },
     take,
   });

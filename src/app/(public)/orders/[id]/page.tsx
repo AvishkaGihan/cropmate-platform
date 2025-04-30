@@ -167,19 +167,6 @@ export default async function OrderPage({ params }: PageProps) {
             </Card>
           )}
 
-          {/* Customer Actions */}
-          {isOwner && order.status === "PENDING_PAYMENT" && (
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Complete Payment</h2>
-              <p className="text-muted-foreground mb-4">
-                You haven't completed payment for this order
-              </p>
-              <Button asChild className="w-full">
-                <Link href={`/crops/${order.cropId}`}>Complete Payment</Link>
-              </Button>
-            </Card>
-          )}
-
           {/* Support Card */}
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Need Help?</h2>
