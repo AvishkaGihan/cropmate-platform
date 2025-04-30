@@ -39,6 +39,16 @@ const Navbar = () => {
             >
               Browse Crops
             </Link>
+            <Link
+              href="/about"
+              className={`transition-colors hover:text-primary ${
+                pathname === "/about"
+                  ? "text-cropmate-primary"
+                  : "text-foreground/60"
+              }`}
+            >
+              About
+            </Link>
           </nav>
         </div>
 
