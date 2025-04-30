@@ -4,10 +4,11 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { usePathname, useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { Leaf, Search } from "lucide-react";
 import { useSession } from "next-auth/react";
 import UserDropdown from "./user-dropdown";
 import { ModeToggle } from "../ui/modeToggle";
+import { cn } from "@/lib/utils";
 
 const Navbar = () => {
   const router = useRouter();
@@ -18,66 +19,84 @@ const Navbar = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const query = formData.get("search") as string;
-    router.push(`/crops?q=${encodeURIComponent(query)}`);
+    if (query.trim()) {
+      router.push(`/crops?q=${encodeURIComponent(query)}`);
+    }
   };
 
+  const navLinks = [
+    { href: "/crops", label: "Browse Crops" },
+    { href: "/about", label: "About" },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+      <div className="container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center space-x-6">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-green-700">Cropmate</span>
+          <Link
+            href="/"
+            className="flex items-center space-x-2 hover:opacity-90 transition-opacity"
+          >
+            <Leaf className="h-5 w-5 text-primary" />
+            <span className="font-bold text-lg text-primary">Cropmate</span>
           </Link>
-          <nav className="flex items-center text-sm font-medium">
-            <Link
-              href="/crops"
-              className={`transition-colors hover:text-primary ${
-                pathname === "/crops"
-                  ? "text-cropmate-primary"
-                  : "text-foreground/60"
-              }`}
-            >
-              Browse Crops
-            </Link>
-            <Link
-              href="/about"
-              className={`transition-colors hover:text-primary ${
-                pathname === "/about"
-                  ? "text-cropmate-primary"
-                  : "text-foreground/60"
-              }`}
-            >
-              About
-            </Link>
+          <nav className="hidden md:flex items-center gap-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  pathname === link.href
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
         </div>
 
-        <form onSubmit={handleSearch} className="flex-1 max-w-md mx-4">
+        <form
+          onSubmit={handleSearch}
+          className="hidden sm:block flex-1 max-w-md mx-4"
+        >
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               name="search"
               type="search"
               placeholder="Search crops..."
-              className="pl-8"
+              className="pl-8 w-full bg-background border-muted focus-visible:ring-primary/20"
             />
           </div>
         </form>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-3">
           <ModeToggle />
           {session ? (
             <UserDropdown user={session.user} />
           ) : (
-            <>
-              <Button variant="outline" asChild>
+            <div className="hidden sm:flex items-center gap-2">
+              <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">Login</Link>
               </Button>
-              <Button asChild>
+              <Button size="sm" asChild>
                 <Link href="/register">Register</Link>
               </Button>
-            </>
+            </div>
           )}
+
+          {/* Mobile button only appears on small screens */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => router.push("/crops")}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </header>
