@@ -100,76 +100,115 @@ const OrderForm = ({ crop }: OrderFormProps) => {
   if (step === "payment") {
     return (
       <div className="space-y-6">
+        <div className="flex items-center mb-4">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setStep("details")}
+            className="text-sm pl-0"
+          >
+            ← Back to details
+          </Button>
+        </div>
+
         <div>
-          <h3 className="text-lg font-medium mb-2">
+          <h3 className="text-lg font-semibold mb-3">
             Bank Transfer Information
           </h3>
-          <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Account Name</span>
-              <span>{crop.farmer.bankDetails.accountName}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Account Number</span>
-              <span>{crop.farmer.bankDetails.accountNumber}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Bank Name</span>
-              <span>{crop.farmer.bankDetails.bankName}</span>
+          <div className="space-y-3 p-5 bg-blue-50 rounded-lg border border-blue-100">
+            <div className="grid grid-cols-2 gap-2">
+              <span className="text-sm font-medium text-blue-700">
+                Account Name
+              </span>
+              <span className="text-sm text-blue-900">
+                {crop.farmer.bankDetails.accountName}
+              </span>
+
+              <span className="text-sm font-medium text-blue-700">
+                Account Number
+              </span>
+              <span className="text-sm text-blue-900">
+                {crop.farmer.bankDetails.accountNumber}
+              </span>
+
+              <span className="text-sm font-medium text-blue-700">
+                Bank Name
+              </span>
+              <span className="text-sm text-blue-900">
+                {crop.farmer.bankDetails.bankName}
+              </span>
+
               {crop.farmer.bankDetails.branch && (
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Branch</span>
-                  <span>{crop.farmer.bankDetails.branch}</span>
-                </div>
+                <>
+                  <span className="text-sm font-medium text-blue-700">
+                    Branch
+                  </span>
+                  <span className="text-sm text-blue-900">
+                    {crop.farmer.bankDetails.branch}
+                  </span>
+                </>
               )}
             </div>
-            <div className="flex justify-between font-bold mt-4">
-              <span>Amount to Transfer</span>
-              <span>${totalPrice.toFixed(2)}</span>
+
+            <div className="border-t border-blue-200 mt-3 pt-3 flex justify-between items-center">
+              <span className="text-sm font-medium text-blue-700">
+                Transfer Amount
+              </span>
+              <span className="text-lg font-bold text-blue-900">
+                ${totalPrice.toFixed(2)}
+              </span>
             </div>
           </div>
         </div>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="paymentProof">Upload Payment Proof</Label>
-              <div className="flex items-center gap-4">
-                {paymentProof && (
-                  <div className="relative h-32 w-32 rounded-md overflow-hidden">
-                    <Image
-                      src={paymentProof}
-                      alt="Payment proof preview"
-                      fill
-                      className="object-cover"
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <div className="border rounded-lg p-5">
+              <div className="space-y-3">
+                <Label htmlFor="paymentProof" className="font-medium">
+                  Upload Payment Proof
+                </Label>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {paymentProof ? (
+                    <div className="relative h-40 w-full sm:w-40 rounded-md overflow-hidden border">
+                      <Image
+                        src={paymentProof}
+                        alt="Payment proof preview"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-40 w-full sm:w-40 rounded-md bg-gray-100 border border-dashed flex items-center justify-center">
+                      <p className="text-sm text-gray-500 text-center px-2">
+                        No image uploaded
+                      </p>
+                    </div>
+                  )}
+                  <div className="flex-1 w-full">
+                    <Input
+                      id="paymentProof"
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={handlePaymentProofChange}
+                      className="cursor-pointer"
                     />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Upload screenshot or scan of your bank transfer receipt
+                    </p>
                   </div>
-                )}
-                <Input
-                  id="paymentProof"
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={handlePaymentProofChange}
-                  className="cursor-pointer"
-                />
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Upload screenshot or scan of your bank transfer receipt
-              </p>
             </div>
-            <div className="flex space-x-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setStep("details")}
-                className="flex-1 cursor-pointer"
-              >
-                Back
-              </Button>
-              <Button type="submit" className="flex-1 cursor-pointer">
-                Place Order
-              </Button>
-            </div>
+
+            <Button
+              type="submit"
+              className="w-full cursor-pointer"
+              disabled={!paymentFile}
+            >
+              Place Order
+            </Button>
           </form>
         </Form>
       </div>
@@ -178,7 +217,17 @@ const OrderForm = ({ crop }: OrderFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <div className="bg-green-50 rounded-lg p-4 border border-green-100 mb-2">
+          <h3 className="font-medium text-green-800 mb-1">Order Summary</h3>
+          <p className="text-sm text-green-700">
+            Available:{" "}
+            <span className="font-medium">
+              {crop.availableQuantity} {crop.unit}
+            </span>
+          </p>
+        </div>
+
         <FormField
           control={form.control}
           name="quantity"
@@ -186,18 +235,49 @@ const OrderForm = ({ crop }: OrderFormProps) => {
             <FormItem>
               <FormLabel>Quantity ({crop.unit})</FormLabel>
               <FormControl>
-                <Input
-                  type="number"
-                  min={1}
-                  max={crop.availableQuantity}
-                  step={1}
-                  {...field}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value, 10);
-                    field.onChange(isNaN(value) ? 0 : value);
-                  }}
-                />
+                <div className="flex items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newValue = Math.max(1, field.value - 1);
+                      field.onChange(newValue);
+                    }}
+                    className="rounded-r-none"
+                  >
+                    -
+                  </Button>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={crop.availableQuantity}
+                    step={1}
+                    {...field}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value, 10);
+                      field.onChange(isNaN(value) ? 0 : value);
+                    }}
+                    className="rounded-none text-center"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newValue = Math.min(
+                        crop.availableQuantity,
+                        field.value + 1
+                      );
+                      field.onChange(newValue);
+                    }}
+                    className="rounded-l-none"
+                  >
+                    +
+                  </Button>
+                </div>
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -209,33 +289,35 @@ const OrderForm = ({ crop }: OrderFormProps) => {
             <FormItem>
               <FormLabel>Delivery Address</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Enter your delivery address" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="space-y-2 pt-2">
+        <div className="bg-gray-50 rounded-lg p-4 space-y-2 border border-gray-100 mt-4">
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">
               Price per {crop.unit}
             </span>
-            <span className="text-sm">{crop.pricePerUnit}</span>
+            <span className="text-sm font-medium">
+              ${crop.pricePerUnit.toFixed(2)}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm text-muted-foreground">Quantity</span>
-            <span className="text-sm">
+            <span className="text-sm font-medium">
               {quantity} {crop.unit}
             </span>
           </div>
-          <div className="flex justify-between font-medium">
+          <div className="border-t border-gray-200 my-2 pt-2 flex justify-between font-medium">
             <span>Total</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span className="text-primary">${totalPrice.toFixed(2)}</span>
           </div>
         </div>
 
-        <Button type="submit" className="w-full cursor-pointer">
+        <Button type="submit" className="w-full cursor-pointer mt-2">
           Proceed to Payment
         </Button>
       </form>
