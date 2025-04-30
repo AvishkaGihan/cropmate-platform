@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useSession } from "next-auth/react";
 import UserDropdown from "./user-dropdown";
+import { ModeToggle } from "../ui/modeToggle";
 
 const Navbar = () => {
   const router = useRouter();
@@ -54,6 +55,7 @@ const Navbar = () => {
         </form>
 
         <div className="flex items-center space-x-2">
+          <ModeToggle />
           {session ? (
             <UserDropdown user={session.user} />
           ) : (
