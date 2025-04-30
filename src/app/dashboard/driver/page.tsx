@@ -1,10 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Truck, Clock, CheckCircle } from "lucide-react";
+import { Truck, Clock, CheckCircle, ArrowRight, Package } from "lucide-react";
 import { getDriverStats } from "@/lib/actions/user.actions";
 import { getRecentDeliveries } from "@/lib/actions/delivery.actions";
 import OrderStatusBadge from "@/components/orders/status-badge";
+import { formatDate } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 export default async function DriverDashboardPage() {
   const [stats, deliveries] = await Promise.all([
@@ -13,99 +21,172 @@ export default async function DriverDashboardPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Driver Dashboard</h1>
-        <Button asChild>
-          <Link href="/dashboard/driver/deliveries">View All Deliveries</Link>
+    <div className="space-y-8">
+      {/* Enhanced header with welcome message */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Driver Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            Welcome back! Here's an overview of your delivery operations.
+          </p>
+        </div>
+        <Button asChild className="sm:self-start">
+          <Link
+            href="/dashboard/driver/deliveries/available"
+            className="flex items-center gap-2"
+          >
+            <Package className="h-4 w-4" />
+            Find Deliveries
+          </Link>
         </Button>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+      {/* Stats Overview with improved styling */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="border-l-4 border-l-blue-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Active Deliveries
             </CardTitle>
-            <Truck className="h-4 w-4 text-muted-foreground" />
+            <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center">
+              <Truck className="h-4 w-4 text-blue-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.activeDeliveries}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.deliveriesChange}% from last week
-            </p>
+            <div className="text-2xl font-bold text-blue-500">
+              {stats.activeDeliveries}
+            </div>
+            <div className="flex items-center mt-1">
+              <Badge
+                variant={
+                  stats.deliveriesChange >= 0 ? "default" : "destructive"
+                }
+                className="text-xs"
+              >
+                {stats.deliveriesChange >= 0 ? "↑" : "↓"}{" "}
+                {Math.abs(stats.deliveriesChange)}%
+              </Badge>
+              <span className="text-xs text-muted-foreground ml-2">
+                from last week
+              </span>
+            </div>
           </CardContent>
         </Card>
-        <Card>
+
+        <Card className="border-l-4 border-l-amber-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Pending Pickups
             </CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <div className="h-8 w-8 rounded-full bg-amber-50 dark:bg-amber-950/50 flex items-center justify-center">
+              <Clock className="h-4 w-4 text-amber-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.pendingPickups}</div>
+            <div className="text-2xl font-bold text-amber-500">
+              {stats.pendingPickups}
+            </div>
           </CardContent>
         </Card>
-        <Card>
+
+        <Card className="border-l-4 border-l-green-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Completed Today
             </CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <div className="h-8 w-8 rounded-full bg-green-50 dark:bg-green-950/50 flex items-center justify-center">
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.completedToday}</div>
+            <div className="text-2xl font-bold text-green-500">
+              {stats.completedToday}
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Deliveries */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Recent Deliveries</CardTitle>
-          <Button asChild variant="outline">
-            <Link href="/dashboard/driver/deliveries">View All</Link>
-          </Button>
+      {/* Recent Deliveries with enhanced styling */}
+      <Card className="border shadow-md">
+        <CardHeader className="border-b bg-muted/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <Truck className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <CardTitle>Recent Deliveries</CardTitle>
+                <CardDescription>
+                  Your latest delivery assignments
+                </CardDescription>
+              </div>
+            </div>
+            <Button asChild variant="ghost" size="sm" className="h-8 gap-1">
+              <Link href="/dashboard/driver/deliveries">
+                <span>View All</span>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           {deliveries.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
+            <div className="text-center py-12 border border-dashed rounded-lg">
+              <Truck className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-30" />
+              <p className="text-muted-foreground font-medium">
                 No deliveries assigned yet
               </p>
+              <Button asChild variant="outline" className="mt-4">
+                <Link href="/dashboard/driver/deliveries/available">
+                  Find available deliveries
+                </Link>
+              </Button>
             </div>
           ) : (
             <div className="space-y-4">
               {deliveries.map((delivery) => (
-                <div key={delivery.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-center">
+                <div
+                  key={delivery.id}
+                  className="border rounded-lg p-4 hover:bg-muted/30 transition-colors"
+                >
+                  <div className="flex justify-between items-start">
                     <div>
                       <Link
                         href={`/orders/${delivery.order.id}`}
-                        className="font-medium hover:underline"
+                        className="font-medium hover:underline text-primary"
                       >
                         Delivery #{delivery.id.slice(0, 8)}
                       </Link>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(delivery.createdAt).toLocaleDateString()}
+                        {formatDate(new Date(delivery.createdAt))}
                       </p>
                     </div>
                     <OrderStatusBadge status={delivery.status} />
                   </div>
-                  <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground">Crop</p>
-                      <p>{delivery.order.crop.name}</p>
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-muted/40 rounded-md p-3">
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Crop
+                      </p>
+                      <p className="font-medium">{delivery.order.crop.name}</p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">Pickup Location</p>
-                      <p>{delivery.order.crop.location}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Pickup Location
+                      </p>
+                      <p className="font-medium">
+                        {delivery.order.crop.location}
+                      </p>
                     </div>
-                    <div>
-                      <p className="text-muted-foreground">Delivery Address</p>
-                      <p>{delivery.order.deliveryAddress}</p>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Delivery Address
+                      </p>
+                      <p className="font-medium">
+                        {delivery.order.deliveryAddress}
+                      </p>
                     </div>
                   </div>
                 </div>
