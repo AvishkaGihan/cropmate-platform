@@ -19,6 +19,12 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  searchKey?: string;
+  filters?: {
+    id: string;
+    title: string;
+    options: { label: string; value: string }[];
+  }[];
 }
 
 export function DataTable<TData, TValue>({

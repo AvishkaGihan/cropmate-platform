@@ -28,8 +28,11 @@ export default async function OrderPage({ params }: PageProps) {
   // Check authorization
   const isOwner = order.buyerId === session?.user.id;
   const isFarmer = order.crop.farmerId === session?.user.id;
+  const isDriver =
+    session?.user.role === "DRIVER" &&
+    order.delivery?.driverId === session?.user.id;
 
-  if (!isOwner && !isFarmer) {
+  if (!isOwner && !isFarmer && !isDriver) {
     notFound();
   }
 
@@ -68,10 +71,14 @@ export default async function OrderPage({ params }: PageProps) {
                     ${order.crop.pricePerUnit}/{order.crop.unit}
                   </p>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Total Amount</p>
-                  <p className="font-medium">${order.totalPrice.toFixed(2)}</p>
-                </div>
+                {!isDriver && ( // Hide total amount from drivers
+                  <div>
+                    <p className="text-muted-foreground">Total Amount</p>
+                    <p className="font-medium">
+                      ${order.totalPrice.toFixed(2)}
+                    </p>
+                  </div>
+                )}
                 <div>
                   <p className="text-muted-foreground">Farmer</p>
                   <p className="font-medium">{order.crop.farmer.name}</p>
@@ -118,8 +125,8 @@ export default async function OrderPage({ params }: PageProps) {
         </div>
 
         <div className="space-y-6">
-          {/* Payment Proof Section */}
-          {order.paymentProof && (
+          {/* Payment Proof Section - Hidden from drivers */}
+          {order.paymentProof && !isDriver && (
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Payment Proof</h2>
               <div className="relative h-64 w-full rounded-md overflow-hidden">
