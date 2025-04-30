@@ -135,7 +135,7 @@ export async function confirmPayment(orderId: string) {
 
 export async function rejectPayment(orderId: string) {
   const session = await auth();
-  if (!session || session.user.role !== "farmer") {
+  if (!session || session.user.role !== "FARMER") {
     throw new Error("Unauthorized");
   }
 
@@ -166,7 +166,7 @@ export async function rejectPayment(orderId: string) {
 
 export async function markAsReadyForDelivery(orderId: string) {
   const session = await auth();
-  if (!session || session.user.role !== "farmer") {
+  if (!session || session.user.role !== "FARMER") {
     throw new Error("Unauthorized");
   }
 
@@ -194,7 +194,7 @@ export async function markAsReadyForDelivery(orderId: string) {
 
 export async function cancelOrder(orderId: string) {
   const session = await auth();
-  if (!session || session.user.role !== "farmer") {
+  if (!session || session.user.role !== "FARMER") {
     throw new Error("Unauthorized");
   }
 
