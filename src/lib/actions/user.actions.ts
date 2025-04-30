@@ -148,3 +148,42 @@ export async function getFarmerStats() {
     deliveriesChange: Math.floor(Math.random() * 15) + 5,
   };
 }
+
+export async function getDriverStats() {
+  const session = await auth();
+  if (!session || session.user.role !== "DRIVER") {
+    throw new Error("Unauthorized");
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const [activeDeliveries, pendingPickups, completedToday] = await Promise.all([
+    db.delivery.count({
+      where: {
+        driverId: session.user.id,
+        status: { in: ["ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
+      },
+    }),
+    db.delivery.count({
+      where: {
+        driverId: session.user.id,
+        status: "ACCEPTED",
+      },
+    }),
+    db.delivery.count({
+      where: {
+        driverId: session.user.id,
+        status: "DELIVERED",
+        updatedAt: { gte: today },
+      },
+    }),
+  ]);
+
+  return {
+    activeDeliveries,
+    pendingPickups,
+    completedToday,
+    deliveriesChange: Math.floor(Math.random() * 20) + 5, // Mock growth percentage
+  };
+}
