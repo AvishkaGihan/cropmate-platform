@@ -177,3 +177,33 @@ export async function pickupDelivery(deliveryId: string) {
 
   revalidatePath("/dashboard/driver/deliveries");
 }
+
+export async function getAllDeliveries() {
+  const session = await auth();
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized: Admin access required");
+  }
+
+  return await db.delivery.findMany({
+    include: {
+      order: {
+        include: {
+          crop: {
+            include: {
+              farmer: {
+                select: { name: true, email: true },
+              },
+            },
+          },
+          buyer: {
+            select: { name: true, email: true },
+          },
+        },
+      },
+      driver: {
+        select: { name: true, email: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}

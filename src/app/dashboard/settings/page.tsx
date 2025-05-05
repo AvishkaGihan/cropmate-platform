@@ -46,46 +46,51 @@ export default function SettingsPage() {
   }, []);
 
   return (
-    <div className="container max-w-4xl mx-auto space-y-8 py-8">
-      <div className="flex justify-between items-center">
+    <div className="container px-4 sm:px-6 max-w-4xl mx-auto space-y-6 md:space-y-8 py-4 md:py-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Settings
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your account preferences and settings.
           </p>
         </div>
         <ModeToggle />
       </div>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icons.bell className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Icons.bell className="h-4 w-4 sm:h-5 sm:w-5" />
             Notifications
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Configure how you receive notifications.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
             <div className="space-y-0.5">
-              <Label className="text-base" htmlFor="email-notifications">
+              <Label
+                className="text-sm sm:text-base"
+                htmlFor="email-notifications"
+              >
                 Email notifications
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Receive email notifications for updates and alerts
               </p>
             </div>
             <Switch id="email-notifications" defaultChecked={true} />
           </div>
-          <Separator className="my-4" />
-          <div className="flex items-center justify-between">
+          <Separator className="my-2 sm:my-4" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
             <div className="space-y-0.5">
-              <Label className="text-base" htmlFor="marketing">
+              <Label className="text-sm sm:text-base" htmlFor="marketing">
                 Marketing emails
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Receive emails about new features and promotions
               </p>
             </div>
@@ -94,23 +99,23 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icons.paintbrush className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Icons.paintbrush className="h-4 w-4 sm:h-5 sm:w-5" />
             Appearance
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Customize the appearance of the app.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
             <div className="space-y-0.5">
-              <Label className="text-base" htmlFor="theme">
+              <Label className="text-sm sm:text-base" htmlFor="theme">
                 Dark mode
               </Label>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Toggle between light and dark theme
               </p>
             </div>
@@ -125,23 +130,23 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icons.user className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Icons.user className="h-4 w-4 sm:h-5 sm:w-5" />
             Account
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Manage your account settings and preferences.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <Button variant="outline" className="w-full sm:w-auto">
+        <CardContent className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+            <Button variant="outline" className="w-full">
               <Icons.key className="mr-2 h-4 w-4" />
               Change Password
             </Button>
-            <Button variant="destructive" className="w-full sm:w-auto">
+            <Button variant="destructive" className="w-full">
               <Icons.trash className="mr-2 h-4 w-4" />
               Delete Account
             </Button>
@@ -150,7 +155,7 @@ export default function SettingsPage() {
       </Card>
 
       <div className="flex justify-end">
-        <Button size="lg">
+        <Button size="lg" className="w-full sm:w-auto">
           <Icons.save className="mr-2 h-4 w-4" />
           Save Changes
         </Button>

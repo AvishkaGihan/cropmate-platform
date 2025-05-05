@@ -35,7 +35,7 @@ export const columns: ColumnDef<
     cell: ({ row }) => (
       <Link
         href={`/orders/${row.original.orderId}`}
-        className="font-medium hover:underline"
+        className="font-medium hover:underline text-xs sm:text-sm"
       >
         #{row.original.id.slice(0, 8)}
       </Link>
@@ -44,14 +44,37 @@ export const columns: ColumnDef<
   {
     accessorKey: "order.crop.name",
     header: "Crop",
+    cell: ({ row }) => (
+      <div className="max-w-[100px] sm:max-w-full truncate">
+        {row.original.order.crop.name}
+      </div>
+    ),
   },
   {
     accessorKey: "order.crop.location",
     header: "Pickup Location",
+    cell: ({ row }) => (
+      <div className="max-w-[100px] sm:max-w-full truncate">
+        {row.original.order.crop.location}
+      </div>
+    ),
+    enableHiding: true,
+    meta: {
+      className: "hidden md:table-cell",
+    },
   },
   {
     accessorKey: "order.deliveryAddress",
     header: "Delivery Address",
+    cell: ({ row }) => (
+      <div className="max-w-[100px] sm:max-w-full truncate">
+        {row.original.order.deliveryAddress}
+      </div>
+    ),
+    enableHiding: true,
+    meta: {
+      className: "hidden md:table-cell",
+    },
   },
   {
     accessorKey: "status",
@@ -61,7 +84,15 @@ export const columns: ColumnDef<
   {
     accessorKey: "createdAt",
     header: "Date",
-    cell: ({ row }) => formatDate(row.original.createdAt),
+    cell: ({ row }) => (
+      <span className="text-xs sm:text-sm">
+        {formatDate(row.original.createdAt)}
+      </span>
+    ),
+    enableHiding: true,
+    meta: {
+      className: "hidden sm:table-cell",
+    },
   },
   {
     id: "actions",
@@ -83,10 +114,11 @@ export const columns: ColumnDef<
       };
 
       return (
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-1 sm:space-y-0">
           {delivery.status === "PENDING" && (
             <Button
               size="sm"
+              className="text-xs px-2 py-1 h-auto sm:h-8"
               onClick={() =>
                 handleAction(
                   () => acceptDelivery(delivery.id),
@@ -100,6 +132,7 @@ export const columns: ColumnDef<
           {delivery.status === "ACCEPTED" && (
             <Button
               size="sm"
+              className="text-xs px-2 py-1 h-auto sm:h-8"
               onClick={() =>
                 handleAction(
                   () => pickupDelivery(delivery.id),
@@ -113,6 +146,7 @@ export const columns: ColumnDef<
           {delivery.status === "PICKED_UP" && (
             <Button
               size="sm"
+              className="text-xs px-2 py-1 h-auto sm:h-8"
               onClick={() =>
                 handleAction(
                   () => completeDelivery(delivery.id),
@@ -126,13 +160,19 @@ export const columns: ColumnDef<
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button variant="ghost" className="h-7 w-7 sm:h-8 sm:w-8 p-0">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
                 <Link href={`/orders/${delivery.orderId}`}>View Details</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="md:hidden">
+                <Link href="#">View Pickup Location</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild className="md:hidden">
+                <Link href="#">View Delivery Address</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

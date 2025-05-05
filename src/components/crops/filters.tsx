@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "../ui/select";
 
-export default function Filters() {
+export default function Filters({ onApply }: { onApply?: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const minInputRef = useRef<HTMLInputElement>(null);
@@ -42,10 +42,12 @@ export default function Filters() {
     });
 
     router.push(`/crops?${params.toString()}`);
+    if (onApply) onApply();
   };
 
   const clearFilters = () => {
     router.push("/crops");
+    if (onApply) onApply();
   };
 
   const handleSliderChange = (value: number[]) => {
@@ -68,7 +70,7 @@ export default function Filters() {
           name="category"
           defaultValue={searchParams.get("category") || ""}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
@@ -84,20 +86,23 @@ export default function Filters() {
       <div>
         <h3 className="font-medium mb-3">Price range</h3>
         <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <Input
-              name="minPrice"
-              type="number"
-              placeholder="Min"
-              defaultValue={searchParams.get("minPrice") || ""}
-              className="w-full"
-              ref={minInputRef}
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                setPriceRange([value, priceRange[1]]);
-              }}
-            />
-            <span className="text-muted-foreground">to</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+            <div className="w-full flex items-center space-x-2">
+              <Input
+                name="minPrice"
+                type="number"
+                placeholder="Min"
+                defaultValue={searchParams.get("minPrice") || ""}
+                className="w-full"
+                ref={minInputRef}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setPriceRange([value, priceRange[1]]);
+                }}
+              />
+              <span className="text-muted-foreground sm:hidden">to</span>
+            </div>
+            <span className="hidden sm:block text-muted-foreground">to</span>
             <Input
               name="maxPrice"
               type="number"
@@ -119,7 +124,13 @@ export default function Filters() {
             step={10}
             minStepsBetweenThumbs={1}
             onValueChange={handleSliderChange}
+            className="mt-6"
           />
+          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+            <span>$0</span>
+            <span>$500</span>
+            <span>$1000</span>
+          </div>
         </div>
       </div>
 
@@ -132,15 +143,15 @@ export default function Filters() {
         />
       </div>
 
-      <div className="flex space-x-2 pt-2">
-        <Button type="submit" className="flex-1 cursor-pointer">
+      <div className="flex flex-col sm:flex-row gap-2 pt-2">
+        <Button type="submit" className="w-full cursor-pointer">
           Apply filters
         </Button>
         <Button
           type="button"
           variant="outline"
           onClick={clearFilters}
-          className="cursor-pointer"
+          className="w-full cursor-pointer"
         >
           Clear
         </Button>

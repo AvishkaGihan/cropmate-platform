@@ -33,6 +33,7 @@ enum Role {
   CUSTOMER
   FARMER
   DRIVER
+  ADMIN
 }
 
 model BankDetails {

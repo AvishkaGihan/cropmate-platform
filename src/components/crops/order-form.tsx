@@ -116,26 +116,26 @@ const OrderForm = ({ crop }: OrderFormProps) => {
           <h3 className="text-lg font-semibold mb-3">
             Bank Transfer Information
           </h3>
-          <div className="space-y-3 p-5 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/50">
-            <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-3 p-4 sm:p-5 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/50">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2">
               <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Account Name
               </span>
-              <span className="text-sm text-blue-900 dark:text-blue-300">
+              <span className="text-sm text-blue-900 dark:text-blue-300 break-words">
                 {crop.farmer.bankDetails.accountName}
               </span>
 
               <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Account Number
               </span>
-              <span className="text-sm text-blue-900 dark:text-blue-300">
+              <span className="text-sm text-blue-900 dark:text-blue-300 break-words">
                 {crop.farmer.bankDetails.accountNumber}
               </span>
 
               <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Bank Name
               </span>
-              <span className="text-sm text-blue-900 dark:text-blue-300">
+              <span className="text-sm text-blue-900 dark:text-blue-300 break-words">
                 {crop.farmer.bankDetails.bankName}
               </span>
 
@@ -144,14 +144,14 @@ const OrderForm = ({ crop }: OrderFormProps) => {
                   <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                     Branch
                   </span>
-                  <span className="text-sm text-blue-900 dark:text-blue-300">
+                  <span className="text-sm text-blue-900 dark:text-blue-300 break-words">
                     {crop.farmer.bankDetails.branch}
                   </span>
                 </>
               )}
             </div>
 
-            <div className="border-t border-blue-200 dark:border-blue-900/50 mt-3 pt-3 flex justify-between items-center">
+            <div className="border-t border-blue-200 dark:border-blue-900/50 mt-3 pt-3 flex flex-wrap justify-between items-center">
               <span className="text-sm font-medium text-blue-700 dark:text-blue-400">
                 Transfer Amount
               </span>
@@ -164,7 +164,7 @@ const OrderForm = ({ crop }: OrderFormProps) => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <div className="border border-border rounded-lg p-5">
+            <div className="border border-border rounded-lg p-4 sm:p-5">
               <div className="space-y-3">
                 <Label htmlFor="paymentProof" className="font-medium">
                   Upload Payment Proof
@@ -192,7 +192,7 @@ const OrderForm = ({ crop }: OrderFormProps) => {
                       type="file"
                       accept="image/*,.pdf"
                       onChange={handlePaymentProofChange}
-                      className="cursor-pointer"
+                      className="cursor-pointer w-full"
                     />
                     <p className="text-sm text-muted-foreground mt-2">
                       Upload screenshot or scan of your bank transfer receipt
@@ -244,7 +244,7 @@ const OrderForm = ({ crop }: OrderFormProps) => {
                       const newValue = Math.max(1, field.value - 1);
                       field.onChange(newValue);
                     }}
-                    className="rounded-r-none"
+                    className="rounded-r-none h-10 w-12"
                   >
                     -
                   </Button>
@@ -258,7 +258,7 @@ const OrderForm = ({ crop }: OrderFormProps) => {
                       const value = parseInt(e.target.value, 10);
                       field.onChange(isNaN(value) ? 0 : value);
                     }}
-                    className="rounded-none text-center"
+                    className="rounded-none text-center h-10"
                   />
                   <Button
                     type="button"
@@ -271,7 +271,7 @@ const OrderForm = ({ crop }: OrderFormProps) => {
                       );
                       field.onChange(newValue);
                     }}
-                    className="rounded-l-none"
+                    className="rounded-l-none h-10 w-12"
                   >
                     +
                   </Button>

@@ -257,3 +257,33 @@ export async function getOrderById(id: string) {
     },
   });
 }
+
+export async function getAllOrders() {
+  const session = await auth();
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized: Admin access required");
+  }
+
+  return await db.order.findMany({
+    include: {
+      crop: {
+        include: {
+          farmer: {
+            select: { name: true },
+          },
+        },
+      },
+      buyer: {
+        select: { name: true, email: true },
+      },
+      delivery: {
+        include: {
+          driver: {
+            select: { name: true, email: true },
+          },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}

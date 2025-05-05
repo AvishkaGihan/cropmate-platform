@@ -1,6 +1,6 @@
 import { Crop, CropCategory } from "@/app/generated/prisma";
 
-export type UserRole = "CUSTOMER" | "FARMER" | "DRIVER";
+export type UserRole = "CUSTOMER" | "FARMER" | "DRIVER" | "ADMIN";
 
 export interface CropSearchParams {
   q?: string;

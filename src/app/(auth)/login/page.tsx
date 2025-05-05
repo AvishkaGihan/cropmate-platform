@@ -45,7 +45,10 @@ export default function LoginPage() {
 
   // Update role based on tab
   const updateRole = (newRole: string) => {
-    form.setValue("role", newRole as "CUSTOMER" | "FARMER" | "DRIVER");
+    form.setValue(
+      "role",
+      newRole as "CUSTOMER" | "FARMER" | "DRIVER" | "ADMIN"
+    );
   };
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
@@ -93,7 +96,7 @@ export default function LoginPage() {
             className="mb-6"
             onValueChange={(value) => updateRole(value)}
           >
-            <TabsList className="grid grid-cols-3 mb-6">
+            <TabsList className="grid grid-cols-4 mb-6">
               <TabsTrigger
                 value="CUSTOMER"
                 className="flex items-center gap-2 cursor-pointer"
@@ -111,6 +114,12 @@ export default function LoginPage() {
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <Lock className="h-4 w-4" /> Driver
+              </TabsTrigger>
+              <TabsTrigger
+                value="ADMIN"
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Lock className="h-4 w-4" /> Admin
               </TabsTrigger>
             </TabsList>
           </Tabs>

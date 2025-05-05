@@ -8,13 +8,17 @@ import {
   Sprout,
   ShoppingBag,
   Truck,
+  Star,
+  HeartHandshake,
+  MessageCircle,
+  HelpCircle,
 } from "lucide-react";
 
 const Home = () => {
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex min-h-screen flex-col ">
       {/* Hero Section - Enhanced with better typography and gradient */}
-      <section className="relative h-[650px] w-full overflow-hidden">
+      <section className="relative h-[650px] w-full overflow-hidden px-2">
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 to-green-800/30 z-10" />
         <div className="absolute inset-0 bg-[url('/hero-bg.jpg')] bg-cover bg-center" />
         <div className="container mx-auto relative z-20 flex h-full items-center">
@@ -24,25 +28,25 @@ const Home = () => {
                 <Leaf className="h-3.5 w-3.5 text-white" />
               </span>
               <span className="text-white font-medium">
-                Farm to Table, Simplified
+                Growing Communities Together
               </span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl font-bold text-white leading-tight">
-              Connecting Farmers <br />
-              <span className="text-primary">with Vendors</span>
+              Hello! Welcome to <br />
+              <span className="text-primary">Your CropMate</span>
             </h1>
 
             <p className="text-lg text-white/90 max-w-lg">
-              Cropmate is the platform that bridges the gap between farmers and
-              vendors, ensuring fresh produce reaches markets efficiently with
-              transparent pricing.
+              Join our friendly community where local farmers and vendors
+              connect. Fresh produce, fair prices, and real people making a
+              difference together.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="gap-2">
                 <Link href="/crops">
-                  Browse Crops <ArrowRight className="h-4 w-4" />
+                  Discover Fresh Crops <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button
@@ -51,7 +55,7 @@ const Home = () => {
                 size="lg"
                 className="bg-white/10 text-white hover:bg-white/20 border-white/20"
               >
-                <Link href="/register">Join Our Network</Link>
+                <Link href="/register">Become Part of Our Family</Link>
               </Button>
             </div>
           </div>
@@ -59,51 +63,51 @@ const Home = () => {
       </section>
 
       {/* How It Works - Enhanced with icons and better cards */}
-      <section className="py-24 bg-slate-50 dark:bg-slate-950">
+      <section className="py-24 bg-slate-50 dark:bg-slate-950 px-2">
         <div className="container mx-auto">
           <div className="text-center mb-16">
-            <p className="text-primary font-medium mb-2">Our Process</p>
-            <h2 className="text-4xl font-bold mb-4">How Cropmate Works</h2>
+            <p className="text-primary font-medium mb-2">Simple & Easy</p>
+            <h2 className="text-4xl font-bold mb-4">How We Work Together</h2>
             <p className="text-muted-foreground mx-auto max-w-2xl">
-              Our simple three-step process connects farmers directly with
-              vendors, eliminating middlemen and ensuring the freshest produce
-              at the best prices.
+              We've made it super easy to connect and collaborate - just three
+              simple steps to bring fresh food from farms to tables while
+              supporting local communities.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                title: "Farmers List Crops",
+                title: "Farmers Share Their Harvest",
                 description:
-                  "Farmers can easily list their available crops with details like price, quantity, and harvest dates.",
+                  "Got crops ready? Just list what you have and set your price - it's that simple!",
                 icon: <Sprout className="h-8 w-8 text-primary" />,
                 benefits: [
-                  "Simple crop management",
-                  "Direct pricing control",
-                  "Harvest tracking",
+                  "Easy-to-use crop listings",
+                  "You control your prices",
+                  "Get notified of interested buyers",
                 ],
               },
               {
-                title: "Vendors Purchase",
+                title: "Vendors Find What They Need",
                 description:
-                  "Vendors browse available crops, select what they need, and place orders with secure payment options.",
+                  "Browse what's fresh and available nearby, and connect directly with the farmers who grew it.",
                 icon: <ShoppingBag className="h-8 w-8 text-primary" />,
                 benefits: [
-                  "Access to fresh produce",
-                  "Transparent pricing",
-                  "Quality assurance",
+                  "Discover local, seasonal produce",
+                  "Know who grew your food",
+                  "Support local agriculture",
                 ],
               },
               {
-                title: "Drivers Deliver",
+                title: "Friendly Drivers Deliver",
                 description:
-                  "Verified drivers pick up the produce and deliver it to vendors with real-time tracking.",
+                  "Our community drivers bring the harvest right to your door - fresh, on time, with care.",
                 icon: <Truck className="h-8 w-8 text-primary" />,
                 benefits: [
-                  "Optimized routes",
-                  "Timely delivery",
-                  "Temperature control",
+                  "Track your delivery in real-time",
+                  "Meet the people behind your food",
+                  "Freshness guaranteed",
                 ],
               },
             ].map((item, index) => (
@@ -130,17 +134,115 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section - New addition */}
+      {/* Testimonials Section - New addition */}
+      <section className="py-20 bg-white dark:bg-slate-900">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-primary font-medium mb-2">
+              Hear From Our Community
+            </p>
+            <h2 className="text-3xl font-bold mb-4">What Our Friends Say</h2>
+            <p className="text-muted-foreground mx-auto max-w-2xl">
+              Real stories from real people in our CropMate family
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Maria Rodriguez",
+                role: "Small Farm Owner",
+                image: "/team-placeholder.jpg",
+                quote:
+                  "CropMate changed everything for my family farm. Now we connect directly with restaurants who love our produce, and I've made friends with other local farmers too!",
+                stars: 5,
+              },
+              {
+                name: "James Chen",
+                role: "Restaurant Owner",
+                image: "/team-placeholder.jpg",
+                quote:
+                  "Finding reliable sources of fresh, local produce used to be a challenge. Now I can browse what's available nearby and build relationships with farmers I trust.",
+                stars: 5,
+              },
+              {
+                name: "Ahmed Hassan",
+                role: "Delivery Partner",
+                image: "/team-placeholder.jpg",
+                quote:
+                  "I love being part of the CropMate community. I'm not just delivering products - I'm connecting people and supporting local agriculture while earning a flexible income.",
+                stars: 5,
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="border rounded-xl p-8 bg-slate-50 dark:bg-slate-800 relative"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  {Array(item.stars)
+                    .fill(0)
+                    .map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-4 w-4 fill-yellow-400 text-yellow-400"
+                      />
+                    ))}
+                </div>
+                <p className="italic text-muted-foreground mb-6">
+                  "{item.quote}"
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="relative h-12 w-12 overflow-hidden rounded-full">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-medium">{item.name}</p>
+                    <p className="text-sm text-muted-foreground">{item.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section - Enhanced with friendlier copy */}
       <section className="py-20">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-4 gap-8 text-center">
             {[
-              { value: "5,000+", label: "Farmers Registered" },
-              { value: "12,000+", label: "Crops Listed" },
-              { value: "3,500+", label: "Vendors Active" },
-              { value: "50+", label: "Regions Covered" },
+              {
+                value: "5,000+",
+                label: "Friendly Farmers",
+                icon: <Sprout className="h-6 w-6 mx-auto mb-2 text-primary" />,
+              },
+              {
+                value: "12,000+",
+                label: "Fresh Crops Available",
+                icon: <Leaf className="h-6 w-6 mx-auto mb-2 text-primary" />,
+              },
+              {
+                value: "3,500+",
+                label: "Happy Vendors",
+                icon: (
+                  <HeartHandshake className="h-6 w-6 mx-auto mb-2 text-primary" />
+                ),
+              },
+              {
+                value: "50+",
+                label: "Communities Supported",
+                icon: (
+                  <MessageCircle className="h-6 w-6 mx-auto mb-2 text-primary" />
+                ),
+              },
             ].map((stat, index) => (
               <div key={index} className="p-6">
+                {stat.icon}
                 <p className="text-4xl font-bold text-primary mb-2">
                   {stat.value}
                 </p>
@@ -151,23 +253,86 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section - New addition */}
+      {/* FAQ Section - New addition */}
+      <section className="py-20 bg-slate-50 dark:bg-slate-950">
+        <div className="container mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-primary font-medium mb-2">Questions?</p>
+            <h2 className="text-3xl font-bold mb-4">We're Here to Help</h2>
+            <p className="text-muted-foreground mx-auto max-w-2xl">
+              Common questions from our community members
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto grid gap-6">
+            {[
+              {
+                question: "How do I get started as a farmer?",
+                answer:
+                  "It's easy! Just create your account, verify your farm details, and start listing your available crops. Our friendly team is here to help you every step of the way.",
+              },
+              {
+                question: "What areas do you currently serve?",
+                answer:
+                  "We're growing every day! Currently, we're active in 50+ regions across the country. When you sign up, we'll let you know if your area is covered or when we'll be expanding there soon.",
+              },
+              {
+                question: "How is pricing determined?",
+                answer:
+                  "Farmers set their own prices, putting the power back in their hands. As a vendor, you'll see transparent pricing with no hidden fees or markups. It's all about fair trade and building relationships.",
+              },
+              {
+                question: "Can I meet the farmers who grow my food?",
+                answer:
+                  "Absolutely! We encourage community connections. Many vendors visit farms, and we host regular meet-ups where everyone in our ecosystem can connect face-to-face.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="border rounded-lg p-6 bg-white dark:bg-slate-900"
+              >
+                <div className="flex gap-4">
+                  <HelpCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-medium text-lg mb-2">
+                      {item.question}
+                    </h3>
+                    <p className="text-muted-foreground">{item.answer}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-10">
+            <p className="text-muted-foreground mb-4">
+              Still have questions? We'd love to chat!
+            </p>
+            <Button asChild variant="outline">
+              <Link href="/about">Contact Our Friendly Team</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section - Enhanced with friendlier copy */}
       <section className="py-20 bg-primary/5">
         <div className="container mx-auto">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">
-              Ready to transform how you source or sell crops?
+              Ready to Join Our Growing Community?
             </h2>
             <p className="text-muted-foreground mb-8">
-              Join thousands of farmers and vendors already using Cropmate to
-              streamline their agricultural business.
+              Whether you're a farmer, vendor, or driver, there's a place for
+              you in our friendly CropMate family. Let's grow something special
+              together!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg">
-                <Link href="/register">Create an Account</Link>
+                <Link href="/register">Join Our Community</Link>
               </Button>
               <Button asChild variant="outline" size="lg">
-                <Link href="/about">Learn More</Link>
+                <Link href="/about">Get to Know Us Better</Link>
               </Button>
             </div>
           </div>
