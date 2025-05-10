@@ -5,17 +5,17 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/app/generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../src/app/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   email       String   @unique
   password    String
   name        String
@@ -37,12 +37,12 @@ enum Role {
 }
 
 model BankDetails {
-  id          String  @id @default(uuid())
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   accountName String
   accountNumber String
   bankName    String
   branch      String?
-  userId      String  @unique
+  userId      String  @unique @db.ObjectId
   user        User    @relation(fields: [userId], references: [id])
 }
 
@@ -54,17 +54,17 @@ enum CropCategory {
 }
 
 model Crop {
-  id               String   @id @default(uuid())
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
   name             String
   description      String?
-  category    CropCategory
+  category         CropCategory
   pricePerUnit     Float
   availableQuantity Float
   unit             String
   harvestDate      DateTime
   location         String
   imageUrl         String?
-  farmerId         String
+  farmerId         String   @db.ObjectId
   farmer           User     @relation(fields: [farmerId], references: [id])
   orders           Order[]
   createdAt        DateTime @default(now())
@@ -72,15 +72,15 @@ model Crop {
 }
 
 model Order {
-  id             String   @id @default(uuid())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
   quantity       Float
   totalPrice     Float
   status         OrderStatus @default(PENDING_PAYMENT)
   deliveryAddress String
   paymentProof   String?
-  buyerId        String
+  buyerId        String   @db.ObjectId
   buyer          User     @relation(fields: [buyerId], references: [id])
-  cropId         String
+  cropId         String   @db.ObjectId
   crop           Crop     @relation(fields: [cropId], references: [id])
   delivery       Delivery?
   createdAt      DateTime @default(now())
@@ -97,13 +97,13 @@ enum OrderStatus {
 }
 
 model Delivery {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   status      DeliveryStatus @default(PENDING)
   pickupDate  DateTime?
   deliveryDate DateTime?
-  driverId    String?
+  driverId    String?  @db.ObjectId
   driver      User?    @relation(fields: [driverId], references: [id])
-  orderId     String   @unique
+  orderId     String   @unique @db.ObjectId
   order       Order    @relation(fields: [orderId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
