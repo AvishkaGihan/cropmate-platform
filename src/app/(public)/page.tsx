@@ -12,6 +12,9 @@ import {
   HeartHandshake,
   MessageCircle,
   HelpCircle,
+  Download,
+  Smartphone,
+  QrCode,
 } from "lucide-react";
 
 const Home = () => {
@@ -207,6 +210,43 @@ const Home = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile App Download Section - Simple Version */}
+      <section className="py-16 bg-primary text-white">
+        <div className="container mx-auto">
+          <div className="max-w-3xl mx-auto text-center space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm backdrop-blur-sm">
+              <Smartphone className="h-4 w-4" />
+              <span className="font-medium">Mobile App</span>
+            </div>
+
+            <h2 className="text-3xl font-bold">Get CropMate on Your Phone</h2>
+
+            <p className="text-white/90 max-w-lg mx-auto">
+              Take CropMate with you everywhere! Our mobile app makes it easier
+              to track orders, discover fresh crops, and stay connected to your
+              local farming community.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button
+                size="lg"
+                className="bg-white text-primary hover:bg-white/90 gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download for iOS
+              </Button>
+              <Button
+                size="lg"
+                className="bg-white text-primary hover:bg-white/90 gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download for Android
+              </Button>
+            </div>
           </div>
         </div>
       </section>
