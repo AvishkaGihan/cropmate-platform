@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { InstallPWA } from "@/components/pwa/install-button";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,18 +12,19 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Cropmate - Connecting Farmers with Vendors",
+  title: {
+    default: "CropMate - Farm to Table Marketplace",
+    template: "%s | CropMate",
+  },
   description:
-    "A platform where vendors can buy crops from farmers and drivers can deliver them",
-  keywords: [
-    "agriculture",
-    "farmers",
-    "vendors",
-    "crop marketplace",
-    "food supply chain",
-  ],
-  authors: [{ name: "Avishka Gihan" }],
-  creator: "Avishka Gihan",
+    "Connect farmers, vendors, and drivers in a sustainable agricultural marketplace",
+  manifest: "/manifest.json",
+  themeColor: "#3b8f22",
+  appleWebApp: {
+    capable: true,
+    title: "CropMate",
+    statusBarStyle: "default",
+  },
 };
 
 export default function RootLayout({
@@ -32,6 +34,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="application-name" content="CropMate" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="CropMate" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#3b8f22" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <script src="/register-sw.js" defer />
+      </head>
       <body>
         <ThemeProvider
           attribute="class"
@@ -40,6 +53,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <div className="fixed bottom-4 right-4 z-50">
+              <InstallPWA />
+            </div>
             {children}
             <Toaster />
           </AuthProvider>
