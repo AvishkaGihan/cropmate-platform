@@ -4,20 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { usePWAInstall } from "./install-context";
 
-export function InstallPWA() {
+export function PhoneInstallButton() {
   const { isInstallable, isInstalled, handleInstallClick } = usePWAInstall();
 
-  if (!isInstallable || isInstalled) return null;
+  // For a better user experience in the mockup, always show the button
+  // but disable it if it's not installable or already installed
+  const isDisabled = !isInstallable || isInstalled;
 
   return (
     <Button
-      onClick={handleInstallClick}
-      variant="outline"
       size="sm"
-      className="flex items-center gap-2"
+      className="gap-2"
+      onClick={handleInstallClick}
+      disabled={isDisabled}
     >
       <Download className="h-4 w-4" />
-      Install App
+      Install Now
     </Button>
   );
 }

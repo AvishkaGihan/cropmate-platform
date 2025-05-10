@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { InstallPWA } from "@/components/pwa/install-button";
+import { PWAInstallProvider } from "@/components/pwa/install-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -53,11 +54,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <div className="fixed bottom-4 right-4 z-50">
-              <InstallPWA />
-            </div>
-            {children}
-            <Toaster />
+            <PWAInstallProvider>
+              <div className="fixed bottom-4 right-4 z-50">
+                <InstallPWA />
+              </div>
+              {children}
+              <Toaster />
+            </PWAInstallProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
