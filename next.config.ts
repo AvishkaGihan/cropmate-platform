@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
 
 const nextConfig: NextConfig = {
   images: {
@@ -15,14 +16,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Add this to properly handle Prisma on Vercel
   webpack: (config, { isServer }) => {
     if (isServer) {
-      config.externals = [
-        ...(config.externals || []),
-        "prisma",
-        "@prisma/client",
-      ];
+      config.plugins = [...config.plugins, new PrismaPlugin()];
     }
     return config;
   },
