@@ -4,8 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { loginSchema } from "@/lib/schemas";
+import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,8 @@ import { toast } from "sonner";
 import { Leaf, Mail, Lock, User } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function LoginPage() {
+// Component to handle search params with Suspense
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -74,137 +76,154 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="container mx-auto flex min-h-screen items-center justify-center py-10">
-      <Card className="w-full max-w-[450px] shadow-lg border-primary/10">
-        <CardHeader className="space-y-3 text-center pb-6">
-          <div className="flex justify-center mb-2">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Leaf className="h-6 w-6 text-primary" />
-            </div>
+    <Card className="w-full max-w-[450px] shadow-lg border-primary/10">
+      <CardHeader className="space-y-3 text-center pb-6">
+        <div className="flex justify-center mb-2">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Leaf className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-bold">
-            Welcome to CropMate
-          </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
-            Enter your credentials to sign in to your account
-          </CardDescription>
-        </CardHeader>
+        </div>
+        <CardTitle className="text-2xl font-bold">
+          Welcome to CropMate
+        </CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          Enter your credentials to sign in to your account
+        </CardDescription>
+      </CardHeader>
 
-        <CardContent>
-          <Tabs
-            defaultValue="CUSTOMER"
-            className="mb-6"
-            onValueChange={(value) => updateRole(value)}
-          >
-            <TabsList className="grid grid-cols-4 mb-6">
-              <TabsTrigger
-                value="CUSTOMER"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <User className="h-4 w-4" /> Customer
-              </TabsTrigger>
-              <TabsTrigger
-                value="FARMER"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Leaf className="h-4 w-4" /> Farmer
-              </TabsTrigger>
-              <TabsTrigger
-                value="DRIVER"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Lock className="h-4 w-4" /> Driver
-              </TabsTrigger>
-              <TabsTrigger
-                value="ADMIN"
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Lock className="h-4 w-4" /> Admin
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+      <CardContent>
+        <Tabs
+          defaultValue="CUSTOMER"
+          className="mb-6"
+          onValueChange={(value) => updateRole(value)}
+        >
+          <TabsList className="grid grid-cols-4 mb-6">
+            <TabsTrigger
+              value="CUSTOMER"
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <User className="h-4 w-4" /> Customer
+            </TabsTrigger>
+            <TabsTrigger
+              value="FARMER"
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Leaf className="h-4 w-4" /> Farmer
+            </TabsTrigger>
+            <TabsTrigger
+              value="DRIVER"
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Lock className="h-4 w-4" /> Driver
+            </TabsTrigger>
+            <TabsTrigger
+              value="ADMIN"
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Lock className="h-4 w-4" /> Admin
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <FormControl>
-                        <Input
-                          placeholder="your@email.com"
-                          {...field}
-                          className="pl-10 h-11"
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="••••••••"
-                          {...field}
-                          className="pl-10 h-11"
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem className="hidden">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        placeholder="your@email.com"
+                        {...field}
+                        className="pl-10 h-11"
+                      />
                     </FormControl>
-                  </FormItem>
-                )}
-              />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <Button type="submit" className="w-full h-11 mt-2 cursor-pointer">
-                Sign In
-              </Button>
-            </form>
-          </Form>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                        className="pl-10 h-11"
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-muted"></div>
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-card px-2 text-muted-foreground">
-                Don't have an account?
-              </span>
-            </div>
-          </div>
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="hidden">
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-          <Link href="/register">
-            <Button variant="outline" className="w-full h-11">
-              Create an account
+            <Button type="submit" className="w-full h-11 mt-2 cursor-pointer">
+              Sign In
             </Button>
-          </Link>
-        </CardContent>
-      </Card>
+          </form>
+        </Form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-muted"></div>
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-card px-2 text-muted-foreground">
+              Don't have an account?
+            </span>
+          </div>
+        </div>
+
+        <Link href="/register">
+          <Button variant="outline" className="w-full h-11">
+            Create an account
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Missing import for useSearchParams
+import { useSearchParams } from "next/navigation";
+
+export default function LoginPage() {
+  return (
+    <div className="container mx-auto flex min-h-screen items-center justify-center py-10">
+      <Suspense
+        fallback={
+          <div className="w-full max-w-[450px] h-[600px] flex items-center justify-center">
+            <div className="animate-pulse">Loading...</div>
+          </div>
+        }
+      >
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }
