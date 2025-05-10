@@ -17,7 +17,7 @@ import {
 import { Separator } from "../ui/separator";
 
 interface MobileFiltersProps {
-  children: React.ReactNode;
+  children: React.ReactElement<{ onApply?: () => void }>;
   activeFilterCount: number;
 }
 
@@ -72,7 +72,7 @@ export default function MobileFilters({
           <Separator className="my-4" />
           <div className="overflow-y-auto px-0 pb-2">
             {/* Clone the children and add the onApply callback */}
-            {React.cloneElement(children as React.ReactElement, {
+            {React.cloneElement(children, {
               onApply: () => setOpen(false),
             })}
           </div>
