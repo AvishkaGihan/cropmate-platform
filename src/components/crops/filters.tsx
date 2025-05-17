@@ -82,7 +82,6 @@ export default function Filters({ onApply }: { onApply?: () => void }) {
           </SelectContent>
         </Select>
       </div>
-
       <div>
         <h3 className="font-medium mb-3">Price range</h3>
         <div className="space-y-4">
@@ -133,7 +132,6 @@ export default function Filters({ onApply }: { onApply?: () => void }) {
           </div>
         </div>
       </div>
-
       <div>
         <h3 className="font-medium mb-3">Location</h3>
         <Input
@@ -141,9 +139,8 @@ export default function Filters({ onApply }: { onApply?: () => void }) {
           placeholder="City or region"
           defaultValue={searchParams.get("location") || ""}
         />
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-2 pt-2">
+      </div>{" "}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
         <Button type="submit" className="w-full cursor-pointer">
           Apply filters
         </Button>

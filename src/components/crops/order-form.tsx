@@ -15,6 +15,8 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { PaymentGateway } from "../payment/payment-gateway";
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -29,10 +31,12 @@ import { Label } from "../ui/label";
 const OrderForm = ({ crop }: OrderFormProps) => {
   const router = useRouter();
   const { data: session } = useSession();
-
-  const [step, setStep] = useState<"details" | "payment">("details");
+  const [step, setStep] = useState<"details" | "payment" | "card-payment">(
+    "details"
+  );
   const [paymentProof, setPaymentProof] = useState<string | null>(null);
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"bank" | "card">("bank");
 
   const form = useForm<z.infer<typeof orderSchema>>({
     resolver: zodResolver(orderSchema),
@@ -65,13 +69,17 @@ const OrderForm = ({ crop }: OrderFormProps) => {
       });
       return;
     }
-
     if (step === "details") {
-      setStep("payment");
+      setStep(paymentMethod === "bank" ? "payment" : "card-payment");
       return;
     }
 
-    if (!paymentFile) {
+    if (step === "payment" && !paymentFile) {
+      toast.error("Payment proof required", {
+        description: "Please upload your payment proof",
+      });
+      return;
+    }    if (!paymentFile) {
       toast.error("Payment proof required", {
         description: "Please upload your payment proof",
       });
@@ -215,6 +223,50 @@ const OrderForm = ({ crop }: OrderFormProps) => {
     );
   }
 
+  if (step === "card-payment") {
+    return (
+      <div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setStep("details")}
+          className="text-sm pl-0 mb-6"
+        >
+          ← Back to details
+        </Button>
+
+        <PaymentGateway
+          amount={totalPrice}
+          onSuccess={async (transactionId) => {
+            try {
+              const order = await createOrder({
+                cropId: crop.id,
+                ...form.getValues(),
+                paymentProof: new File(
+                  [transactionId],
+                  "transaction.txt",
+                  { type: "text/plain" }
+                ),
+              });
+
+              toast.success("Order created successfully", {
+                description: "Payment processed and order confirmed",
+              });
+
+              router.push(`/orders/${order.id}`);
+            } catch (error: any) {
+              toast.error("Order failed", {
+                description: error.message,
+              });
+            }
+          }}
+          onCancel={() => setStep("details")}
+        />
+      </div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
@@ -315,9 +367,60 @@ const OrderForm = ({ crop }: OrderFormProps) => {
             <span>Total</span>
             <span className="text-primary">${totalPrice.toFixed(2)}</span>
           </div>
+        </div>        <div className="space-y-3">
+          <FormLabel>Select Payment Method</FormLabel>
+          <RadioGroup
+            defaultValue="bank"
+            onValueChange={(value: string) => setPaymentMethod(value as "bank" | "card")}
+            className="grid grid-cols-2 gap-4"
+          >
+            <div>
+              <RadioGroupItem value="bank" id="bank" className="peer sr-only" />
+              <label
+                htmlFor="bank"
+                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mb-3 h-6 w-6"
+                >
+                  <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3" />
+                </svg>
+                Bank Transfer
+              </label>
+            </div>
+            <div>
+              <RadioGroupItem value="card" id="card" className="peer sr-only" />
+              <label
+                htmlFor="card"
+                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="mb-3 h-6 w-6"
+                >
+                  <rect width="20" height="14" x="2" y="5" rx="2" />
+                  <line x1="2" x2="22" y1="10" y2="10" />
+                </svg>
+                Credit Card
+              </label>
+            </div>
+          </RadioGroup>
         </div>
 
-        <Button type="submit" className="w-full cursor-pointer mt-2">
+        <Button type="submit" className="w-full cursor-pointer">
           Proceed to Payment
         </Button>
       </form>
